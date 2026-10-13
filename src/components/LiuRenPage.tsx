@@ -93,9 +93,10 @@ export default function LiuRenPage({ now }: Props) {
                 ) : null;
               }
               const hv = r.heaven[earth];
-              const hl = [r.sanChuan.chu, r.sanChuan.zhong, r.sanChuan.mo].includes(hv);
+              const chuanIdx = [r.sanChuan.chu, r.sanChuan.zhong, r.sanChuan.mo].indexOf(hv);
               return (
-                <div key={earth} className={'pan-cell' + (hl ? ' hl' : '')}>
+                <div key={earth} className={'pan-cell' + (chuanIdx >= 0 ? ' hl' : '')}>
+                  {chuanIdx >= 0 && <span className="chuan-badge">{['初', '中', '末'][chuanIdx]}</span>}
                   <div className="jn">{r.jiangAtEarth[earth]}</div>
                   <div className="hv">{ZHI[hv]}</div>
                   <div className="ev">{ZHI[earth]}</div>
@@ -122,7 +123,7 @@ export default function LiuRenPage({ now }: Props) {
                   <div className="c-lbl">{c.lbl}</div>
                   <div className="c-zhi" style={{ color: 'var(--cinnabar)' }}>{c.d === '空亡' ? '○' + ZHI[c.z] : ZHI[c.z]}</div>
                   <div className="c-info">
-                    {c.j} · {c.q}<br />遁干：{c.d}
+                    {c.j} · {c.q}<br />遁干：{c.d} · 临{ZHI[r.heaven.indexOf(c.z)]}宫
                   </div>
                 </div>
               ))}

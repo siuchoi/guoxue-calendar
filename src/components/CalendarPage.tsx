@@ -6,6 +6,29 @@ import { getYueJiang, YUE_JIANG_NAME, ZHI } from '../lib/liuren';
 
 const WEEK_HEADS = ['一', '二', '三', '四', '五', '六', '日'];
 
+// 十二时辰时段
+const SC_RANGE = ['23:00-01:00', '01:00-03:00', '03:00-05:00', '05:00-07:00', '07:00-09:00', '09:00-11:00', '11:00-13:00', '13:00-15:00', '15:00-17:00', '17:00-19:00', '19:00-21:00', '21:00-23:00'];
+
+// 每日一句（国学经典，按日轮转）
+const DAILY_QUOTES: Array<{ text: string; from: string }> = [
+  { text: '学而时习之，不亦说乎。', from: '《论语》' },
+  { text: '上善若水，水善利万物而不争。', from: '《道德经》' },
+  { text: '天行健，君子以自强不息。', from: '《周易》' },
+  { text: '地势坤，君子以厚德载物。', from: '《周易》' },
+  { text: '路漫漫其修远兮，吾将上下而求索。', from: '屈原《离骚》' },
+  { text: '非淡泊无以明志，非宁静无以致远。', from: '诸葛亮《诫子书》' },
+  { text: '宠辱不惊，闲看庭前花开花落；去留无意，漫随天外云卷云舒。', from: '《菜根谭》' },
+  { text: '己所不欲，勿施于人。', from: '《论语》' },
+  { text: '知人者智，自知者明。胜人者有力，自胜者强。', from: '《道德经》' },
+  { text: '千里之行，始于足下。', from: '《道德经》' },
+  { text: '君子坦荡荡，小人长戚戚。', from: '《论语》' },
+  { text: '业精于勤，荒于嬉；行成于思，毁于随。', from: '韩愈《进学解》' },
+  { text: '勿以恶小而为之，勿以善小而不为。', from: '《三国志》' },
+  { text: '静以修身，俭以养德。', from: '诸葛亮《诫子书》' },
+  { text: '博学之，审问之，慎思之，明辨之，笃行之。', from: '《礼记·中庸》' },
+  { text: '吾日三省吾身：为人谋而不忠乎？与朋友交而不信乎？传不习乎？', from: '《论语》' },
+];
+
 function gzIndex(gz: string, GAN: string[], ZHI: string[]): number {
   const g = GAN.indexOf(gz[0]);
   const z = ZHI.indexOf(gz[1]);
@@ -93,9 +116,20 @@ export default function CalendarPage({ now, city }: Props) {
 
   const pad = (n: number) => String(n).padStart(2, '0');
 
+  // ── 十二时辰吉凶（getTimes 返回13个：早子时…晚子时，取前12个）──
+  const dayTimes = selLunar.getTimes().slice(0, 12);
+  const isSelToday = isToday(selY, selM, selD);
+  const [selSC, setSelSC] = useState<number | null>(null);
+  const activeSC = selSC ?? (isSelToday ? bjSC : 0);
+  const activeTime = dayTimes[activeSC];
+
+  // ── 每日一句（按日期轮转）──
+  const quote = DAILY_QUOTES[(selY * 372 + selM * 31 + selD) % DAILY_QUOTES.length];
+
   return (
     <div className="cal-layout">
-      {/* 左：月历 */}
+      {/* 左列：月历 + 时辰吉凶 + 每日一句 */}
+      <div>
       <div className="card">
         <div className="month-nav">
           <button onClick={() => moveMonth(-1)}>‹ 上月</button>
@@ -132,6 +166,46 @@ export default function CalendarPage({ now, city }: Props) {
             );
           })}
         </div>
+      </div>
+
+      {/* 十二时辰吉凶 */}
+      <div className="card" style={{ marginTop: 18 }}>
+        <div className="section-title" style={{ marginTop: 0 }}>十二时辰吉凶</div>
+        <div className="shichen-grid">
+          {dayTimes.map((t, i) => (
+            <div
+              key={i}
+              className={[
+                'shichen-cell',
+                i === activeSC ? 'active' : '',
+                isSelToday && i === bjSC ? 'now' : '',
+              ].join(' ')}
+              onClick={() => setSelSC(i)}
+            >
+              <div className="sc-name">{t.getZhi()}时</div>
+              <div className="sc-gz">{t.getGanZhi()}</div>
+              <div className={'sc-luck ' + (t.getTianShenLuck() === '吉' ? 'good' : 'bad')}>
+                {t.getTianShen()} · {t.getTianShenLuck()}
+              </div>
+            </div>
+          ))}
+        </div>
+        {activeTime && (
+          <div className="shichen-detail">
+            <b>{activeTime.getZhi()}时</b>（{SC_RANGE[activeSC]}）{activeTime.getGanZhi()} · 纳音{activeTime.getNaYin()} · 冲{activeTime.getChongShengXiao()} 煞{activeTime.getSha()}
+            <div className="sc-yiji">
+              <span className="sc-yi">宜 {activeTime.getYi().join('　') || '—'}</span>
+              <span className="sc-ji">忌 {activeTime.getJi().join('　') || '—'}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 每日一句 */}
+      <div className="card quote-card" style={{ marginTop: 18 }}>
+        <div className="quote-text">「{quote.text}」</div>
+        <div className="quote-from">—— {quote.from}</div>
+      </div>
       </div>
 
       {/* 右：当日详情 */}

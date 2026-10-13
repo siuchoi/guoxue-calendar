@@ -62,13 +62,13 @@ body {
 .weather-chip b { color: var(--ink); }
 
 /* ── Tabs ── */
-.tabs { display: flex; gap: 6px; margin: 22px 0 18px; }
+.tabs { display: flex; gap: 6px; margin: 22px 0 18px; justify-content: center; }
 .tabs button {
   font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
   font-size: 17px; letter-spacing: 3px;
-  background: transparent; border: 1px solid var(--line); color: var(--ink-light);
-  padding: 9px 26px; border-radius: 8px 8px 0 0; cursor: pointer;
-  border-bottom: none; transition: all .2s;
+  background: var(--card); border: 1px solid var(--line); color: var(--ink-light);
+  padding: 9px 26px; border-radius: 8px; cursor: pointer;
+  transition: all .2s;
 }
 .tabs button:hover { color: var(--cinnabar); }
 .tabs button.active {
@@ -88,8 +88,43 @@ body {
 }
 
 /* ── 日历页布局 ── */
-.cal-layout { display: grid; grid-template-columns: 1fr 380px; gap: 18px; }
+.cal-layout { display: grid; grid-template-columns: 1fr 380px; gap: 18px; align-items: start; }
 @media (max-width: 960px) { .cal-layout { grid-template-columns: 1fr; } }
+
+/* ── 十二时辰吉凶 ── */
+.shichen-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.shichen-cell {
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 2px; text-align: center; cursor: pointer;
+  background: var(--paper); transition: all .15s; position: relative;
+}
+.shichen-cell:hover { border-color: var(--cinnabar); }
+.shichen-cell.active { border-color: var(--cinnabar); background: rgba(155, 43, 43, 0.06); box-shadow: 0 0 0 1px var(--cinnabar) inset; }
+.shichen-cell.now::after {
+  content: "今"; position: absolute; top: -6px; right: -6px;
+  background: var(--cinnabar); color: #fff; font-size: 10px;
+  width: 16px; height: 16px; border-radius: 50%; line-height: 16px;
+}
+.sc-name { font-weight: 700; font-size: 14px; }
+.sc-gz { font-size: 12px; color: var(--ink-light); margin: 1px 0; }
+.sc-luck { font-size: 12px; }
+.sc-luck.good { color: var(--cinnabar); }
+.sc-luck.bad { color: var(--ink-light); }
+.shichen-detail {
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+  font-size: 13.5px; line-height: 1.9;
+}
+.sc-yiji { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.sc-yi { color: var(--cinnabar); font-size: 13px; }
+.sc-ji { color: var(--ink-light); font-size: 13px; }
+
+/* ── 每日一句 ── */
+.quote-card { text-align: center; padding: 22px; }
+.quote-text {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+  font-size: 17px; line-height: 2; letter-spacing: 1px; color: var(--ink);
+}
+.quote-from { font-size: 12.5px; color: var(--ink-light); margin-top: 6px; }
 
 .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .month-nav .ym { font-size: 20px; letter-spacing: 3px; font-weight: 700; }
@@ -180,27 +215,33 @@ body {
 .tip-box b { color: var(--cinnabar); }
 
 /* ── 六壬页 ── */
-.liuren-layout { display: grid; grid-template-columns: 400px 1fr; gap: 18px; align-items: start; }
+.liuren-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr); gap: 18px; align-items: start; }
 @media (max-width: 960px) { .liuren-layout { grid-template-columns: 1fr; } }
 .tiandipan {
   display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
-  gap: 5px; aspect-ratio: 1;
+  gap: 6px; aspect-ratio: 1;
 }
 .pan-cell {
-  background: var(--paper-deep); border: 1px solid var(--line); border-radius: 8px;
+  background: var(--paper-deep); border: 1px solid var(--line); border-radius: 10px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 4px; position: relative;
+  padding: 6px; position: relative;
 }
-.pan-cell .hv { font-size: 21px; font-weight: 700; }
-.pan-cell .jn { font-size: 11px; color: var(--gold); }
-.pan-cell .ev { font-size: 12px; color: var(--ink-light); margin-top: 3px; border-top: 1px dashed var(--line); padding-top: 2px; }
+.pan-cell .hv { font-size: 30px; font-weight: 700; font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; line-height: 1.15; }
+.pan-cell .jn { font-size: 13px; color: var(--gold); }
+.pan-cell .ev { font-size: 14px; color: var(--ink-light); margin-top: 5px; border-top: 1px dashed var(--line); padding-top: 3px; }
 .pan-cell.center {
   grid-column: 2 / 4; grid-row: 2 / 4; background: var(--card);
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; flex-direction: column; gap: 8px;
 }
-.pan-cell.center .c-title { font-size: 15px; letter-spacing: 2px; color: var(--cinnabar); font-weight: 700; }
-.pan-cell.center .c-line { font-size: 12.5px; color: var(--ink); line-height: 1.7; }
-.pan-cell.hl { border-color: var(--cinnabar); background: #fdf3ec; }
+.pan-cell.center .c-title { font-size: 19px; letter-spacing: 4px; color: var(--cinnabar); font-weight: 700; font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; }
+.pan-cell.center .c-line { font-size: 15px; color: var(--ink); line-height: 1.8; }
+.pan-cell.hl { border-color: var(--cinnabar); background: #fdf3ec; box-shadow: 0 0 0 1px var(--cinnabar) inset; }
+.chuan-badge {
+  position: absolute; top: 6px; right: 6px;
+  background: var(--cinnabar); color: #fff;
+  font-size: 11px; width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
 
 .sanchuan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; }
 .chuan-item {

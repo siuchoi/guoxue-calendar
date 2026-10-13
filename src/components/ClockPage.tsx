@@ -7,29 +7,39 @@ interface Props { now: Date; city: City; trueTime: Date }
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** 十二时辰 SVG 表盘 */
+/** 十二时辰配色：日行一周 —— 夜蓝 → 晓绿 → 午红 → 暮紫 → 夜阑 */
+const SC_COLORS = [
+  '#4A5D7E', // 子 黛蓝
+  '#5C7186', // 丑 苍蓝
+  '#5E8575', // 寅 松绿
+  '#7A9E6E', // 卯 竹青
+  '#A89B58', // 辰 藤黄
+  '#C08A3E', // 巳 琥珀
+  '#B5482E', // 午 朱砂
+  '#B26B45', // 未 赭石
+  '#C08B52', // 申 杏黄
+  '#96708A', // 酉 紫檀
+  '#665E7A', // 戌 玄紫
+  '#3F4A63', // 亥 玄青
+];
+
+const KAITI = '"Kaiti SC", "STKaiti", "KaiTi", serif';
+
+/** 十二时辰 SVG 罗盘 */
 export default function ClockPage({ now, city, trueTime }: Props) {
   const bjSC = hourToShiChen(now.getHours());
   const trueSC = hourToShiChen(trueTime.getHours());
 
-  const R = 200, cx = 230, cy = 230;
-  // 表盘起始角：子时（23-01点）在正上方。每个时辰占 30°，子正中=0°
-  const angleOf = (zhi: number) => (zhi * 30 - 0) * (Math.PI / 180);
+  const R = 200, cx = 230, cy = 230, R0 = 116;
+  // 子时正中=正上方，每时辰 30°
+  const angleOf = (zhi: number) => zhi * 30 * (Math.PI / 180);
 
   const sector = (zhi: number) => {
-    // 该时辰扇区：中心角 angleOf(zhi)，±15°
     const a0 = angleOf(zhi) - Math.PI / 12 - Math.PI / 2;
     const a1 = angleOf(zhi) + Math.PI / 12 - Math.PI / 2;
-    const r0 = 108, r1 = R;
     const p = (a: number, r: number) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-    const [x0, y0] = p(a0, r0), [x1, y1] = p(a0, r1), [x2, y2] = p(a1, r1), [x3, y3] = p(a1, r0);
-    return `M ${x0} ${y0} L ${x1} ${y1} A ${r1} ${r1} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${r0} ${r0} 0 0 0 ${x0} ${y0} Z`;
-  };
-
-  // 指针角度：按分钟插值。北京时针对应当前小时分钟 → 在时辰内的进度
-  const handAngle = (t: Date) => {
-    const mins = ((t.getHours() + 1) % 24) * 60 + t.getMinutes();
-    return (mins / 120) * 30 * (Math.PI / 180) - Math.PI / 2;
+    const [x0, y0] = p(a0, R0), [x1, y1] = p(a0, R), [x2, y2] = p(a1, R), [x3, y3] = p(a1, R0);
+    return `M ${x0} ${y0} L ${x1} ${y1} A ${R} ${R} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${R0} ${R0} 0 0 0 ${x0} ${y0} Z`;
   };
 
   return (
@@ -38,49 +48,71 @@ export default function ClockPage({ now, city, trueTime }: Props) {
         <h2>地支时钟</h2>
         <div className="dial-wrap">
           <svg width={460} height={460} viewBox="0 0 460 460">
-            <circle cx={cx} cy={cy} r={R + 8} fill="none" stroke="var(--line)" strokeWidth={2} />
+            {/* 外圈双环 + 刻度 */}
+            <circle cx={cx} cy={cy} r={R + 14} fill="none" stroke="var(--line)" strokeWidth={1.5} />
+            <circle cx={cx} cy={cy} r={R + 4} fill="var(--card)" stroke="var(--line)" strokeWidth={1} />
+            {Array.from({ length: 24 }).map((_, k) => {
+              const a = k * 15 * (Math.PI / 180) - Math.PI / 2;
+              const long = k % 2 === 1; // 时辰分界处长刻度
+              const r1 = R + 4, r2 = R + (long ? 14 : 9);
+              return (
+                <line
+                  key={k}
+                  x1={cx + r1 * Math.cos(a)} y1={cy + r1 * Math.sin(a)}
+                  x2={cx + r2 * Math.cos(a)} y2={cy + r2 * Math.sin(a)}
+                  stroke="var(--ink-light)" strokeWidth={long ? 1.5 : 0.8}
+                />
+              );
+            })}
+
+            {/* 十二时辰扇区 */}
             {SHI_CHEN_INFO.map((sc) => {
-              const isBj = sc.zhi === bjSC;
               const isTrue = sc.zhi === trueSC;
+              const isBj = sc.zhi === bjSC && !isTrue;
+              const color = SC_COLORS[sc.zhi];
               const a = angleOf(sc.zhi) - Math.PI / 2;
-              const tx = cx + 156 * Math.cos(a);
-              const ty = cy + 156 * Math.sin(a);
+              const tx = cx + 162 * Math.cos(a);
+              const ty = cy + 162 * Math.sin(a);
               return (
                 <g key={sc.zhi}>
                   <path
                     d={sector(sc.zhi)}
-                    fill={isTrue ? '#f3dfc8' : isBj ? '#f7ece2' : 'transparent'}
-                    stroke="var(--line)"
-                    strokeWidth={1}
+                    fill={color}
+                    fillOpacity={isTrue ? 0.95 : isBj ? 0.5 : 0.24}
+                    stroke={isTrue ? color : 'var(--card)'}
+                    strokeWidth={isTrue ? 2.5 : 1.5}
                   />
                   <text
-                    x={tx} y={ty - 6} textAnchor="middle"
-                    fontSize={19} fontWeight={700}
-                    fill={isTrue ? 'var(--cinnabar)' : 'var(--ink)'}
+                    x={tx} y={ty - 4} textAnchor="middle"
+                    fontSize={isTrue ? 22 : 19} fontWeight={700} fontFamily={KAITI}
+                    fill={isTrue ? '#fff' : 'var(--ink)'}
                   >
                     {sc.name[0]}
                   </text>
-                  <text x={tx} y={ty + 14} textAnchor="middle" fontSize={10.5} fill="var(--ink-light)">
+                  <text
+                    x={tx} y={ty + 15} textAnchor="middle" fontSize={10.5}
+                    fill={isTrue ? 'rgba(255,255,255,0.9)' : 'var(--ink-light)'}
+                    style={{ fontVariantNumeric: 'tabular-nums' }}
+                  >
                     {sc.range.slice(0, 5)}
                   </text>
                 </g>
               );
             })}
-            {/* 时针（按真太阳时） */}
-            <line
-              x1={cx} y1={cy}
-              x2={cx + 96 * Math.cos(handAngle(trueTime))}
-              y2={cy + 96 * Math.sin(handAngle(trueTime))}
-              stroke="var(--cinnabar)" strokeWidth={3} strokeLinecap="round"
-            />
-            <circle cx={cx} cy={cy} r={6} fill="var(--cinnabar)" />
-            {/* 中心读数 */}
-            <text x={cx} y={cy - 130} textAnchor="middle" fontSize={13} fill="var(--ink-light)">真太阳时</text>
-            <text x={cx} y={cy - 108} textAnchor="middle" fontSize={22} fontWeight={700} fill="var(--ink)" style={{ fontVariantNumeric: 'tabular-nums' }}>
-              {pad(trueTime.getHours())}:{pad(trueTime.getMinutes())}
+
+            {/* 中心白盘 */}
+            <circle cx={cx} cy={cy} r={R0} fill="var(--paper)" stroke="var(--line)" strokeWidth={1.5} />
+
+            {/* 罗盘心无针，以满色扇区指示当前时辰 */}
+
+            {/* 中心读数（全部收在圆心内） */}
+            <text x={cx} y={cy - 56} textAnchor="middle" fontSize={12.5} letterSpacing={3} fill="var(--ink-light)">真太阳时</text>
+            <text x={cx} y={cy - 26} textAnchor="middle" fontSize={25} fontWeight={700} fill="var(--cinnabar)" style={{ fontVariantNumeric: 'tabular-nums' }}>
+              {pad(trueTime.getHours())}:{pad(trueTime.getMinutes())}:{pad(trueTime.getSeconds())}
             </text>
-            <text x={cx} y={cy + 128} textAnchor="middle" fontSize={13} fill="var(--ink-light)">北京时间</text>
-            <text x={cx} y={cy + 152} textAnchor="middle" fontSize={22} fontWeight={700} fill="var(--ink)" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            <line x1={cx - 64} y1={cy - 8} x2={cx + 64} y2={cy - 8} stroke="var(--line)" strokeDasharray="3 3" />
+            <text x={cx} y={cy + 18} textAnchor="middle" fontSize={12.5} letterSpacing={3} fill="var(--ink-light)">北京时间</text>
+            <text x={cx} y={cy + 48} textAnchor="middle" fontSize={25} fontWeight={700} fill="var(--ink)" style={{ fontVariantNumeric: 'tabular-nums' }}>
               {pad(now.getHours())}:{pad(now.getMinutes())}:{pad(now.getSeconds())}
             </text>
           </svg>
@@ -100,7 +132,10 @@ export default function ClockPage({ now, city, trueTime }: Props) {
             className="tip-box"
             style={{
               marginBottom: 8,
-              border: sc.zhi === trueSC ? '1px solid var(--cinnabar)' : '1px solid transparent',
+              borderLeft: `4px solid ${SC_COLORS[sc.zhi]}`,
+              border: sc.zhi === trueSC ? `1px solid ${SC_COLORS[sc.zhi]}` : '1px solid transparent',
+              borderLeftWidth: 4,
+              borderLeftColor: SC_COLORS[sc.zhi],
             }}
           >
             <b>{sc.name}</b> <span style={{ color: 'var(--ink-light)', fontSize: 12 }}>{sc.range}</span>
