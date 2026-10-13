@@ -30,8 +30,16 @@ npm run build
 
 纯静态产物，可部署到任意静态托管（GitHub Pages / Vercel / Cloudflare Pages）。
 
+## 测试
+
+```bash
+npm run test:liuren   # 大六壬引擎 144 例黄金案例全量回归
+```
+
+六壬黄金语料（144 例）与取传口径参考自 [metaphysics-steward](https://github.com/superzhang21/metaphysics-steward)（MIT），致谢。
+
 ## 说明
 
-- 涉害课深浅采用「临宫归本家步数」算法，深浅相同时先孟后仲
+- 涉害课取「临位孟仲季取浅、平级复等」口径，经 144 例实测语料锁绿
 - 昼夜贵人按占时划分：卯至申为昼（旦贵），酉至寅为夜（暮贵）
 - 仅供学习研究传统历法与术数文化

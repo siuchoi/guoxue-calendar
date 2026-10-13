@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:liuren": "tsc src/lib/liuren.ts --outDir .test --module commonjs --target es2020 --skipLibCheck && node -e \"require('fs').renameSync('.test/liuren.js','.test/liuren.cjs')\" && node tests/liuren/compare.cjs"
   },
   "dependencies": {
     "lunar-typescript": "^1.7.4",

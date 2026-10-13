@@ -23,7 +23,7 @@ export const isYangGan = (gan: number) => gan % 2 === 0;
 export const isYangZhi = (zhi: number) => zhi % 2 === 0;
 
 /** 干寄宫：甲寄寅 乙寄辰 丙戊寄巳 丁己寄未 庚寄申 辛寄戌 壬寄亥 癸寄丑 */
-export const GAN_JI_GONG: number[] = [2, 5, 5, 7, 5, 7, 8, 9, 11, 1];
+export const GAN_JI_GONG: number[] = [2, 4, 5, 7, 5, 7, 8, 10, 11, 1];
 
 /** 月将名称（按将支索引） */
 export const YUE_JIANG_NAME = ['神后', '大吉', '功曹', '太冲', '天罡', '太乙', '胜光', '小吉', '传送', '从魁', '河魁', '登明'];
@@ -71,8 +71,8 @@ const XING: number[] = (() => {
 })();
 const isZiXing = (z: number) => XING[z] === z;
 
-/** 驿马：申子辰马在寅，寅午戌马在申，巳酉丑马在亥，亥卯未马在巳 */
-const YI_MA = (zhi: number) => (2 - zhi % 4 + 12) % 12 === 2 ? 2 : [2, 8, 11, 5][zhi % 4];
+/** 驿马：申子辰马在寅，巳酉丑马在亥，寅午戌马在申，亥卯未马在巳 */
+const YI_MA = (zhi: number) => [2, 11, 8, 5][zhi % 4];
 
 export interface SiKe {
   /** 天盘神（上神） */
@@ -210,36 +210,32 @@ export function paiLiuRen(opts: {
     if (wuxingKe(downWx, upWx)) xiaZeList.push({ idx, up: k.up, xiaKe: true });
     else if (wuxingKe(upWx, downWx)) shangKeList.push({ idx, up: k.up, xiaKe: false });
   });
-  const dedupKe: KeInfo[] = xiaZeList.length > 0 ? xiaZeList : shangKeList;
-  const anyKe: KeInfo[] = [...xiaZeList, ...shangKeList];
+  const hits: KeInfo[] = xiaZeList.length > 0 ? xiaZeList : shangKeList; // 取用的一类克
+  const hasKe = hits.length > 0;
 
-  /** 取克为初传：一克直取，多克比用，俱比俱不比涉害 */
-  const pickByKe = (raw: KeInfo[]): { chu: number; keTi: string } => {
-    // 同一上神在多课重复出现时只算一次（如八专日课二课四同神）
-    const list = raw.filter((k, i) => raw.findIndex((x) => x.up === k.up) === i);
+  /** 取克为初传：一克直取（贼克），多克比用，俱比俱不比涉害（临位孟仲季取浅，平级复等）。
+   *  口径对齐 metaphysics-steward 144 例黄金语料：按课逐条计、不做上神去重。 */
+  const pickByKe = (hits: KeInfo[]): { chu: number; keTi: string } => {
     const yang = isYangGan(dayGan);
-    if (list.length === 1) {
-      return { chu: list[0].up, keTi: list[0].xiaKe ? '重审课' : '元首课' };
+    if (hits.length === 1) {
+      return { chu: hits[0].up, keTi: hits[0].xiaKe ? '重审课' : '元首课' };
     }
-    const bi = list.filter((k) => isYangZhi(k.up) === yang);
-    if (bi.length === 1) {
-      return { chu: bi[0].up, keTi: bi[0].xiaKe ? '知一课（重审）' : '知一课（元首）' };
+    // 比用：上神与日干同阴阳
+    const bi = hits.filter((k) => isYangZhi(k.up) === yang);
+    const pool = bi.length > 0 ? bi : hits;
+    if (pool.length === 1) {
+      return { chu: pool[0].up, keTi: pool[0].xiaKe ? '知一课（重审）' : '知一课（元首）' };
     }
-    // 涉害：上神自临地盘归本家步数深者为用；深浅同则先取临孟者（寅申巳亥）
-    const candidates = bi.length > 1 ? bi : list;
-    const depth = (h: number) => (heaven.indexOf(h) - h + 12) % 12;
-    let best = candidates[0];
-    let bestDepth = depth(best.up);
-    for (const c of candidates) {
-      const d = depth(c.up);
-      if (d > bestDepth) { best = c; bestDepth = d; }
-    }
-    const tied = candidates.filter((c) => depth(c.up) === bestDepth);
-    if (tied.length > 1) {
-      const meng = tied.filter((c) => [2, 8, 5, 11].includes(heaven.indexOf(c.up)));
-      if (meng.length > 0) best = meng[0];
-    }
-    return { chu: best.up, keTi: '涉害课' };
+    // 涉害：按上神所临地盘支（K1 之临位为日干寄宫支）的孟仲季取浅者
+    const mzj = (down: number) => ([2, 8, 5, 11].includes(down) ? 0 : [0, 6, 3, 9].includes(down) ? 1 : 2);
+    const levels = pool.map((k) => mzj(siKe[k.idx].down));
+    const best = Math.min(...levels);
+    const pool3 = pool.filter((_, i) => levels[i] === best);
+    if (pool3.length === 1) return { chu: pool3[0].up, keTi: '涉害课' };
+    // 复等：阳日取干上神，阴日取支上神
+    const pref = yang ? siKe[0].up : siKe[2].up;
+    const hit = pool3.find((k) => k.up === pref);
+    return { chu: hit ? hit.up : pool3[0].up, keTi: '涉害课' };
   };
 
   const isFuYin = yueJiang === zhanShiZhi;
@@ -252,25 +248,25 @@ export function paiLiuRen(opts: {
 
   // ── 伏吟 ──
   if (isFuYin) {
-    keTi = '伏吟课';
-    if (anyKe.length > 0) {
-      chu = pickByKe(dedupKe).chu;
+    const upGan = siKe[0].up, upZhi = siKe[2].up;
+    if (hasKe) {
+      chu = hits[0].up;
       keTi = '伏吟课（用刑冲）';
     } else {
-      chu = isYangGan(dayGan) ? siKe[0].up : siKe[2].up;
+      chu = isYangGan(dayGan) ? upGan : upZhi;
       keTi = isYangGan(dayGan) ? '伏吟课（自任格）' : '伏吟课（自信格）';
     }
+    // 初自刑：发用于干则中取支上，发用于支则中取干上；末传自刑则冲、否则递刑
     if (isZiXing(chu)) {
-      zhong = isYangGan(dayGan) ? siKe[2].up : siKe[0].up;
-      mo = isZiXing(zhong) ? chong(zhong) : XING[zhong];
+      zhong = chu === upGan && chu !== upZhi ? upZhi : upGan;
     } else {
       zhong = XING[chu];
-      mo = isZiXing(zhong) ? chong(zhong) : XING[zhong];
     }
+    mo = isZiXing(zhong) ? chong(zhong) : XING[zhong];
   } else if (isFanYin) {
     // ── 返吟 ──
-    if (anyKe.length > 0) {
-      chu = pickByKe(dedupKe).chu;
+    if (hasKe) {
+      chu = pickByKe(hits).chu;
       zhong = chong(chu);
       mo = chong(zhong);
       keTi = '返吟课';
@@ -280,34 +276,46 @@ export function paiLiuRen(opts: {
       mo = siKe[0].up;
       keTi = '返吟课（井栏射）';
     }
-  } else if (anyKe.length > 0) {
+  } else if (hasKe) {
     // ── 贼克 / 比用 / 涉害 ──
-    const picked = pickByKe(dedupKe);
+    const picked = pickByKe(hits);
     chu = picked.chu;
     zhong = heaven[chu];
     mo = heaven[zhong];
     keTi = picked.keTi;
+  } else if (GAN_JI_GONG[dayGan] === dayZhi) {
+    // ── 八专：干支同宫（优先于遥克） ──
+    if (isYangGan(dayGan)) chu = (siKe[0].up + 2) % 12;  // 干上神顺数三位
+    else chu = (siKe[3].up + 10) % 12;                    // 第四课上神逆数三位
+    zhong = siKe[0].up;
+    mo = siKe[0].up;
+    keTi = '八专课';
   } else {
-    // ── 无贼克 → 遥克 ──
+    // ── 遥克：蒿矢（神克干）先判，弹射（干克神）后备 ──
+    // 候选恰一即用（不论阴阳）；多候选取与日干同阴阳者第一个；俱不比则整类弃用转另一类
     const yang = isYangGan(dayGan);
-    const yaoShe = siKe
-      .map((k, idx) => ({ idx, up: k.up, she: wuxingKe(ZHI_WUXING[k.up], GAN_WUXING[dayGan]) })) // 神克干：蒿矢
-      .filter((x) => x.she);
-    const tanShe = siKe
-      .map((k, idx) => ({ idx, up: k.up, she: wuxingKe(GAN_WUXING[dayGan], ZHI_WUXING[k.up]) })) // 干克神：弹射
-      .filter((x) => x.she);
-    const yao = yaoShe.length > 0 ? yaoShe : tanShe;
-    if (yao.length > 0) {
-      let pick = yao[0];
-      if (yao.length > 1) {
-        const bi = yao.filter((x) => isYangZhi(x.up) === yang);
-        if (bi.length > 0) pick = bi[0];
-      }
-      chu = pick.up;
+    const pickYao = (cands: KeInfo[]): KeInfo | null => {
+      if (cands.length === 1) return cands[0];
+      return cands.find((c) => isYangZhi(c.up) === yang) ?? null;
+    };
+    const haoShi = siKe
+      .map((k, idx) => ({ idx, up: k.up, xiaKe: false }))
+      .filter((x) => wuxingKe(ZHI_WUXING[x.up], GAN_WUXING[dayGan]));
+    let pickedYao = pickYao(haoShi);
+    let isHaoShi = true;
+    if (!pickedYao) {
+      const tanShe = siKe
+        .map((k, idx) => ({ idx, up: k.up, xiaKe: false }))
+        .filter((x) => wuxingKe(GAN_WUXING[dayGan], ZHI_WUXING[x.up]));
+      pickedYao = pickYao(tanShe);
+      isHaoShi = false;
+    }
+    if (pickedYao) {
+      chu = pickedYao.up;
       zhong = heaven[chu];
       mo = heaven[zhong];
-      keTi = yaoShe.length > 0 ? '遥克课（蒿矢格）' : '遥克课（弹射格）';
-    } else if (uniqueKeCount === 3) {
+      keTi = isHaoShi ? '遥克课（蒿矢格）' : '遥克课（弹射格）';
+    } else if (uniqueKeCount < 4) {
       // ── 别责：四课不全且无克 ──
       if (yang) {
         const heGan = (dayGan + 5) % 10; // 甲己合…
@@ -318,13 +326,6 @@ export function paiLiuRen(opts: {
       zhong = siKe[0].up;
       mo = siKe[0].up;
       keTi = '别责课';
-    } else if (uniqueKeCount === 2) {
-      // ── 八专：干支同宫 ──
-      if (yang) chu = (siKe[0].up + 2) % 12;          // 干上神顺数三位
-      else chu = (siKe[3].up + 10) % 12;              // 第四课上神逆数三位
-      zhong = siKe[0].up;
-      mo = siKe[0].up;
-      keTi = '八专课';
     } else {
       // ── 昴星 ──
       if (yang) {
