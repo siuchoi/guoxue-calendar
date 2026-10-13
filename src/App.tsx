@@ -25,8 +25,14 @@ export default function App() {
   const prov = PROVINCES.find((p) => p.name === provName) ?? PROVINCES[0];
 
   useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
+    // 对齐真实秒边界，避免 setInterval 漂移导致读数与秒针不同步
+    let t: number;
+    const tick = () => {
+      setNow(new Date());
+      t = window.setTimeout(tick, 1000 - (Date.now() % 1000));
+    };
+    t = window.setTimeout(tick, 1000 - (Date.now() % 1000));
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {

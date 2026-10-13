@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { City } from '../lib/cities';
 import { SHI_CHEN_INFO, hourToShiChen } from '../lib/truesolar';
 import { ZHI } from '../lib/liuren';
@@ -25,6 +25,45 @@ const SC_COLORS = [
 
 const KAITI = '"Kaiti SC", "STKaiti", "KaiTi", serif';
 
+/** 秒针轨道：rAF 逐帧驱动，彗星拖尾匀速绕圈 */
+function SecondsOrbit({ cx, cy, orbit }: { cx: number; cy: number; orbit: number }) {
+  const [sec, setSec] = useState(() => Date.now() / 1000);
+  useEffect(() => {
+    let raf: number;
+    const tick = () => {
+      setSec(Date.now() / 1000);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const s = sec % 60;
+  const headA = (s / 60) * Math.PI * 2 - Math.PI / 2;
+  const dots = [];
+  const N = 22;
+  for (let i = N; i >= 1; i--) {
+    const a = headA - i * (Math.PI * 2 / 60) * 0.4; // 每颗尾点落后 0.4s
+    const t = 1 - i / N;
+    dots.push(
+      <circle
+        key={i}
+        cx={cx + orbit * Math.cos(a)} cy={cy + orbit * Math.sin(a)}
+        r={1 + 2.4 * t}
+        fill="var(--cinnabar)" fillOpacity={0.05 + 0.45 * t * t}
+      />
+    );
+  }
+  const hx = cx + orbit * Math.cos(headA), hy = cy + orbit * Math.sin(headA);
+  return (
+    <g>
+      {dots}
+      <circle cx={hx} cy={hy} r={7.5} fill="var(--cinnabar)" fillOpacity={0.18} />
+      <circle cx={hx} cy={hy} r={3.8} fill="var(--cinnabar)" stroke="#fff" strokeWidth={1.2} />
+    </g>
+  );
+}
+
 /** 十二时辰 SVG 罗盘 */
 export default function ClockPage({ now, city, trueTime }: Props) {
   const bjSC = hourToShiChen(now.getHours());
@@ -47,7 +86,7 @@ export default function ClockPage({ now, city, trueTime }: Props) {
       <div className="card">
         <h2>地支时钟</h2>
         <div className="dial-wrap">
-          <svg width={460} height={460} viewBox="0 0 460 460">
+          <svg viewBox="0 0 460 460" style={{ width: '100%', maxWidth: 620, height: 'auto' }}>
             {/* 外圈双环 + 刻度 */}
             <circle cx={cx} cy={cy} r={R + 14} fill="none" stroke="var(--line)" strokeWidth={1.5} />
             <circle cx={cx} cy={cy} r={R + 4} fill="var(--card)" stroke="var(--line)" strokeWidth={1} />
@@ -64,6 +103,9 @@ export default function ClockPage({ now, city, trueTime }: Props) {
                 />
               );
             })}
+
+            {/* 秒针轨道：彗星级拖尾（外圈双环之间） */}
+            <SecondsOrbit cx={cx} cy={cy} orbit={R + 9} />
 
             {/* 十二时辰扇区 */}
             {SHI_CHEN_INFO.map((sc) => {

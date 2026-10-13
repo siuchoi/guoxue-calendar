@@ -206,7 +206,7 @@ body {
 /* ── 时钟页 ── */
 .clock-layout { display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start; }
 @media (max-width: 960px) { .clock-layout { grid-template-columns: 1fr; } }
-.dial-wrap { display: flex; justify-content: center; padding: 10px; }
+.dial-wrap { display: flex; justify-content: center; padding: 6px; }
 .time-readout { text-align: center; margin-top: 4px; }
 .time-readout .t { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 2px; }
 .time-readout .lbl { font-size: 13px; color: var(--ink-light); letter-spacing: 3px; margin-top: 2px; }
