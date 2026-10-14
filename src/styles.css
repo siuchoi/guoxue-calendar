@@ -58,7 +58,7 @@ body {
 .loc-selects select {
   background: var(--card); border: 1px solid var(--line); color: var(--ink);
   padding: 6px 10px; border-radius: 6px; font-size: 13px; font-family: inherit;
-  cursor: pointer; margin-right: 6px;
+  cursor: pointer; margin-right: 6px; max-width: 150px;
 }
 .weather-chip {
   font-size: 13px; color: var(--ink-light);
@@ -426,6 +426,7 @@ body {
 .jkj-select {
   font-family: inherit; font-size: 14px; padding: 7px 10px;
   border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink);
+  max-width: 210px;
 }
 .jkj-meta { font-size: 14px; line-height: 2.1; color: var(--ink); }
 .jkj-meta b { color: var(--cinnabar); }
