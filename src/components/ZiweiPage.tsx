@@ -3,7 +3,9 @@ import { paiZiwei, ZiweiResult, PALACE_NAMES } from '../lib/ziwei';
 import { interpretZiwei } from '../lib/interpret';
 import InterpCard from './InterpCard';
 import { PROVINCES, DEFAULT_CITY } from '../lib/cities';
+import { DISTRICTS } from '../lib/districts';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import GuideCard from './GuideCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 // 传统命盘支位布局：宫支 -> [gridRow, gridCol]（4x4，中心 2x2 为信息区）
@@ -20,10 +22,14 @@ export default function ZiweiPage({ now }: { now: Date }) {
   );
   const [prov, setProv] = useState('北京市');
   const [city, setCity] = useState('北京市');
+  const [district, setDistrict] = useState('东城区');
   const [r, setR] = useState<ZiweiResult | null>(null);
 
   const curProv = PROVINCES.find((p) => p.name === prov) ?? PROVINCES[0];
   const curCity = curProv.cities.find((c) => c.name === city) ?? curProv.cities[0] ?? DEFAULT_CITY;
+  // 县级名称（坐标沿用市级政府驻地，见 districts.ts 头部注释；真太阳时差 <4 分钟，时辰级无感）
+  const curDistricts = DISTRICTS[prov]?.find((c) => c.name === city)?.counties ?? [];
+  const curDistrict = curDistricts.includes(district) ? district : (curDistricts[0] ?? '');
 
   const cast = () => {
     const [d, t] = dt.split('T');
@@ -48,15 +54,29 @@ export default function ZiweiPage({ now }: { now: Date }) {
   return (
     <div className="page-stack">
       <div className="card">
-        <div className="section-title">紫微斗数 · 排盘</div>
+        <div className="section-title" style={{ marginTop: 0 }}>紫微斗数 · 排盘</div>
+        <GuideCard id="ziwei" />
         <div className="mh-form">
           <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="出生时间" />
           <label>出生地
-            <select value={prov} onChange={(e) => { setProv(e.target.value); const p = PROVINCES.find((x) => x.name === e.target.value)!; setCity(p.cities[0].name); }} className="jkj-select">
+            <select value={prov} onChange={(e) => {
+              const p = PROVINCES.find((x) => x.name === e.target.value)!;
+              setProv(p.name);
+              setCity(p.cities[0].name);
+              setDistrict(DISTRICTS[p.name]?.[0]?.counties?.[0] ?? '');
+            }} className="jkj-select">
               {PROVINCES.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
             </select>
-            <select value={city} onChange={(e) => setCity(e.target.value)} className="jkj-select">
+            <select value={city} onChange={(e) => {
+              setCity(e.target.value);
+              setDistrict(DISTRICTS[prov]?.find((c) => c.name === e.target.value)?.counties?.[0] ?? '');
+            }} className="jkj-select">
               {curProv.cities.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+            </select>
+            <select value={curDistrict} onChange={(e) => setDistrict(e.target.value)} className="jkj-select">
+              {curDistricts.length > 0
+                ? curDistricts.map((d) => <option key={d} value={d}>{d}</option>)
+                : <option value="">—</option>}
             </select>
           </label>
           <button className="ly-cast-btn" onClick={cast}>排命盘</button>

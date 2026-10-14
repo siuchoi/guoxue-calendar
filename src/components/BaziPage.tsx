@@ -3,7 +3,9 @@ import { paiBazi, BaziResult, GAN_WX, ZHI_WX } from '../lib/bazi';
 import { hehun, HehunResult } from '../lib/hehun';
 import { interpretBazi } from '../lib/interpret';
 import { PROVINCES, DEFAULT_CITY } from '../lib/cities';
+import { DISTRICTS } from '../lib/districts';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import GuideCard from './GuideCard';
 import InterpCard from './InterpCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -12,16 +14,34 @@ const PILLAR_KEYS = ['Year', 'Month', 'Day', 'Hour'] as const;
 const PILLAR_LABELS: Record<string, string> = { Year: '年柱', Month: '月柱', Day: '日柱', Hour: '时柱' };
 
 interface PersonInput {
-  dt: string; sex: number; prov: string; city: string;
+  dt: string; sex: number; prov: string; city: string; district: string;
 }
 
-function useCity(prov: string, city: string) {
+function useCity(prov: string, city: string, district?: string) {
   const p = PROVINCES.find((x) => x.name === prov) ?? PROVINCES[0];
-  return p.cities.find((c) => c.name === city) ?? p.cities[0] ?? DEFAULT_CITY;
+  const base = p.cities.find((c) => c.name === city) ?? p.cities[0] ?? DEFAULT_CITY;
+  // 县级沿用市级坐标（同市经度差<1°，真太阳时影响<2分钟），有更接近的县则取之
+  // cities.ts 无县级坐标，DISTRICTS 仅提供县名。坐标仍以市级政府驻地为基准。
+  return base;
 }
 
 function PersonForm({ label, v, onChange, hideSex }: { label: string; v: PersonInput; onChange: (x: PersonInput) => void; hideSex?: boolean }) {
   const prov = PROVINCES.find((p) => p.name === v.prov) ?? PROVINCES[0];
+  const districts = DISTRICTS[v.prov]?.find((c) => c.name === v.city)?.counties ?? [];
+  const hasDistricts = districts.length > 0;
+
+  const onProvChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const p = PROVINCES.find((x) => x.name === e.target.value)!;
+    const firstCity = p.cities[0]?.name ?? '';
+    const firstDistrict = DISTRICTS[e.target.value]?.[0]?.counties?.[0] ?? '';
+    onChange({ ...v, prov: e.target.value, city: firstCity, district: firstDistrict });
+  };
+  const onCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const city = e.target.value;
+    const firstDistrict = DISTRICTS[v.prov]?.find((c) => c.name === city)?.counties?.[0] ?? '';
+    onChange({ ...v, city, district: firstDistrict });
+  };
+
   return (
     <div className="bz-form">
       <div className="bz-form-title">{label}</div>
@@ -35,11 +55,16 @@ function PersonForm({ label, v, onChange, hideSex }: { label: string; v: PersonI
         )}
       </div>
       <div className="mh-form" style={{ marginTop: 8 }}>
-        <select value={v.prov} onChange={(e) => { const p = PROVINCES.find((x) => x.name === e.target.value)!; onChange({ ...v, prov: e.target.value, city: p.cities[0].name }); }} className="jkj-select">
+        <select value={v.prov} onChange={onProvChange} className="jkj-select">
           {PROVINCES.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
         </select>
-        <select value={v.city} onChange={(e) => onChange({ ...v, city: e.target.value })} className="jkj-select">
+        <select value={v.city} onChange={onCityChange} className="jkj-select">
           {prov.cities.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+        </select>
+        <select value={v.district} onChange={(e) => onChange({ ...v, district: e.target.value })} className="jkj-select">
+          {hasDistricts
+            ? districts.map((d) => <option key={d} value={d}>{d}</option>)
+            : <option value="">—</option>}
         </select>
       </div>
     </div>
@@ -102,8 +127,8 @@ function DaYunBar({ bz }: { bz: BaziResult }) {
 export default function BaziPage({ now }: { now: Date }) {
   const [mode, setMode] = useState<'single' | 'hehun'>('single');
   const defDt = `${now.getFullYear() - 30}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T12:00`;
-  const [p1, setP1] = useState<PersonInput>({ dt: defDt, sex: 1, prov: '广东省', city: '深圳市' });
-  const [p2, setP2] = useState<PersonInput>({ dt: defDt, sex: 0, prov: '广东省', city: '深圳市' });
+  const [p1, setP1] = useState<PersonInput>({ dt: defDt, sex: 1, prov: '广东省', city: '深圳市', district: '南山区' });
+  const [p2, setP2] = useState<PersonInput>({ dt: defDt, sex: 0, prov: '广东省', city: '深圳市', district: '南山区' });
   const [bz, setBz] = useState<BaziResult | null>(null);
   const [hh, setHh] = useState<HehunResult | null>(null);
 
@@ -111,7 +136,7 @@ export default function BaziPage({ now }: { now: Date }) {
     const [d, t] = v.dt.split('T');
     const [y, m, day] = d.split('-').map(Number);
     const [hh2, mm] = t.split(':').map(Number);
-    return { date: new Date(y, m - 1, day, hh2, mm), lng: useCity(v.prov, v.city).lng };
+    return { date: new Date(y, m - 1, day, hh2, mm), lng: useCity(v.prov, v.city, v.district).lng };
   };
 
   const castSingle = () => {
@@ -128,6 +153,8 @@ export default function BaziPage({ now }: { now: Date }) {
   return (
     <div className="page-stack">
       <div className="card">
+        <div className="section-title" style={{ marginTop: 0 }}>八字 · 排盘</div>
+        <GuideCard id="bazi" />
         <div className="mh-mode">
           <button className={mode === 'single' ? 'on' : ''} onClick={() => setMode('single')}>八字排盘</button>
           <button className={mode === 'hehun' ? 'on' : ''} onClick={() => setMode('hehun')}>八字合婚</button>
