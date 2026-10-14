@@ -105,9 +105,9 @@ export function personShensha(bz: BaziResult): ShenSha[] {
   const gzGroup = Object.keys(GUCHEN_POS).find((g) => g.includes(yz));
   if (gzGroup) {
     const at = has(GUCHEN_POS[gzGroup]);
-    if (at) out.push({ name: '孤辰', at, detail: `孤辰星现于${at}` });
+    if (at) out.push({ name: '孤辰', at, detail: `孤辰临${at}，主独处清静、亲缘偏淡` });
     const at2 = has(GUASU_POS[gzGroup]);
-    if (at2) out.push({ name: '寡宿', at: at2, detail: `寡宿星现于${at2}` });
+    if (at2) out.push({ name: '寡宿', at: at2, detail: `寡宿临${at2}，主情感内敛、不善外露` });
   }
   if (YANGREN_POS[dg]) {
     const at = has(YANGREN_POS[dg]);
@@ -246,9 +246,10 @@ export function hehun(male: BaziResult, female: BaziResult): HehunResult {
   const fShensha = personShensha(female);
   {
     const all = [...mShensha, ...fShensha];
+    const fmt = (s: ShenSha) => `${s.name}（${s.at}）：${s.detail}`;
     const notes = [
-      `男命神煞：${mShensha.map((s) => `${s.name}@${s.at}`).join('、') || '无明显神煞'}`,
-      `女命神煞：${fShensha.map((s) => `${s.name}@${s.at}`).join('、') || '无明显神煞'}`,
+      `男命神煞：${mShensha.map(fmt).join('；') || '无明显神煞'}`,
+      `女命神煞：${fShensha.map(fmt).join('；') || '无明显神煞'}`,
     ];
     let score = 0;
     const hasS = (name: string) => all.some((s) => s.name === name);
