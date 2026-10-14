@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { paiBazi, BaziResult, GAN_WX, ZHI_WX } from '../lib/bazi';
 import { hehun, HehunResult } from '../lib/hehun';
+import { interpretBazi } from '../lib/interpret';
 import { PROVINCES, DEFAULT_CITY } from '../lib/cities';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import InterpCard from './InterpCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const EL_CLASS: Record<string, string> = { 木: 'el-mu', 火: 'el-huo', 土: 'el-tu', 金: 'el-jin', 水: 'el-shui' };
@@ -18,17 +20,19 @@ function useCity(prov: string, city: string) {
   return p.cities.find((c) => c.name === city) ?? p.cities[0] ?? DEFAULT_CITY;
 }
 
-function PersonForm({ label, v, onChange }: { label: string; v: PersonInput; onChange: (x: PersonInput) => void }) {
+function PersonForm({ label, v, onChange, hideSex }: { label: string; v: PersonInput; onChange: (x: PersonInput) => void; hideSex?: boolean }) {
   const prov = PROVINCES.find((p) => p.name === v.prov) ?? PROVINCES[0];
   return (
     <div className="bz-form">
       <div className="bz-form-title">{label}</div>
       <div className="mh-form">
         <DateTimePicker value={parseDT(v.dt)} onChange={(d) => onChange({ ...v, dt: formatDT(d) })} label={label} />
-        <select value={v.sex} onChange={(e) => onChange({ ...v, sex: Number(e.target.value) })} className="jkj-select">
-          <option value={1}>乾造（男）</option>
-          <option value={0}>坤造（女）</option>
-        </select>
+        {!hideSex && (
+          <select value={v.sex} onChange={(e) => onChange({ ...v, sex: Number(e.target.value) })} className="jkj-select">
+            <option value={1}>乾造（男）</option>
+            <option value={0}>坤造（女）</option>
+          </select>
+        )}
       </div>
       <div className="mh-form" style={{ marginTop: 8 }}>
         <select value={v.prov} onChange={(e) => { const p = PROVINCES.find((x) => x.name === e.target.value)!; onChange({ ...v, prov: e.target.value, city: p.cities[0].name }); }} className="jkj-select">
@@ -139,8 +143,8 @@ export default function BaziPage({ now }: { now: Date }) {
         ) : (
           <>
             <div className="bz-forms-2col">
-              <PersonForm label="男方" v={p1} onChange={setP1} />
-              <PersonForm label="女方" v={p2} onChange={setP2} />
+              <PersonForm label="男方" v={p1} onChange={setP1} hideSex />
+              <PersonForm label="女方" v={p2} onChange={setP2} hideSex />
             </div>
             <div className="mh-form" style={{ marginTop: 10 }}>
               <button className="ly-cast-btn" onClick={castHehun}>合婚</button>
@@ -160,6 +164,8 @@ export default function BaziPage({ now }: { now: Date }) {
           <DaYunBar bz={bz} />
         </div>
       )}
+
+      {mode === 'single' && bz && <InterpCard interp={interpretBazi(bz)} />}
 
       {/* ── 合婚结果 ── */}
       {mode === 'hehun' && hh && (

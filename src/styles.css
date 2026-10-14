@@ -300,38 +300,98 @@ body {
 .mh-hint { font-size: 12.5px; color: var(--ink-faint, #b0a898); }
 
 /* ── 公历/农历 时间选择器 ── */
-.dtp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.dtp-head { display: inline-flex; align-items: center; gap: 4px; }
-.dtp-label { font-size: 14px; color: var(--ink-light); margin-right: 4px; }
-.dtp-head button {
-  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 13px; letter-spacing: 1px;
-  background: var(--paper-deep); border: 1px solid var(--line); color: var(--ink-light);
-  padding: 4px 12px; border-radius: 6px; cursor: pointer; transition: all .2s;
+.dtp {
+  display: inline-flex; flex-direction: column; gap: 10px;
+  padding: 12px 14px 10px;
+  background: linear-gradient(180deg, #fbf8f1 0%, var(--card) 100%);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(90, 70, 40, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  min-width: 300px;
 }
-.dtp-head button.on { border-color: var(--cinnabar); color: var(--cinnabar); background: #fdf3ec; font-weight: 700; }
-.dtp input[type="date"], .dtp input[type="time"] {
-  font-family: inherit; font-size: 14px; padding: 6px 9px;
-  border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink);
+.dtp-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line);
 }
+.dtp-label {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+  font-size: 15px; letter-spacing: 3px; color: var(--ink);
+  font-weight: 700;
+  position: relative; padding-left: 10px;
+}
+.dtp-label::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 14px; background: var(--cinnabar); border-radius: 2px;
+}
+/* 印章式 公历/农历 分段切换 */
+.dtp-seg {
+  display: inline-flex; border: 1px solid var(--line); border-radius: 7px;
+  overflow: hidden; background: var(--paper-deep);
+}
+.dtp-seg button {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 13px; letter-spacing: 2px;
+  background: transparent; border: none; color: var(--ink-light);
+  padding: 4px 14px; cursor: pointer; transition: all .18s;
+  position: relative;
+}
+.dtp-seg button + button { border-left: 1px solid var(--line); }
+.dtp-seg button:hover { color: var(--cinnabar); }
+.dtp-seg button.on {
+  background: var(--cinnabar); color: #fff; font-weight: 700;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.15);
+}
+/* 控件行：宽度按内容自适应，不留大段空白 */
+.dtp-body { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .dtp select {
-  font-family: inherit; font-size: 14px; padding: 6px 9px;
-  border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink);
-  max-width: 160px;
+  font-family: inherit; font-size: 14px; padding: 7px 10px;
+  border: 1px solid var(--line); border-radius: 7px;
+  background: var(--card); color: var(--cinnabar-deep); font-weight: 600;
+  transition: border-color .15s, box-shadow .15s;
+  width: auto; cursor: pointer;
+}
+.dtp select:focus {
+  outline: none; border-color: var(--cinnabar);
+  box-shadow: 0 0 0 2px rgba(166, 58, 43, 0.10);
 }
 .dtp-carry {
   font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 13.5px; letter-spacing: 1px;
   background: var(--cinnabar); color: #fff; border: none; border-radius: 6px;
   padding: 6px 14px; cursor: pointer;
 }
-.dtp.hint { color: var(--ink-faint, #b0a898); }
+/* 换算提示行 */
 .dtp-hint {
-  flex-basis: 100%;
-  font-size: 12.5px;
-  color: var(--ink-faint, #b0a898);
+  display: flex; align-items: center; gap: 7px;
+  padding-top: 8px; border-top: 1px dashed var(--line);
+  font-size: 12.5px; color: var(--ink-light);
   font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
   letter-spacing: 0.5px;
 }
-.dtp-hint b { color: var(--gold); font-weight: 600; }
+.dtp-hint-mark {
+  width: 18px; height: 18px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--cinnabar), var(--cinnabar-deep));
+  color: #fff; font-size: 10px; border-radius: 50%;
+}
+.dtp-hint b { color: var(--cinnabar-deep); font-weight: 700; letter-spacing: 1px; }
+/* ── 白话解读卡 ── */
+.interp-card { margin-top: 18px; }
+.interp-lines { display: flex; flex-direction: column; gap: 9px; margin-top: 4px; }
+.interp-line {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 9px 12px; border-radius: 8px;
+  background: var(--paper-deep); border-left: 3px solid var(--line);
+  font-size: 14px; line-height: 1.8; color: var(--ink);
+}
+.interp-line.good { border-left-color: #6b9a5a; }
+.interp-line.bad { border-left-color: var(--cinnabar); }
+.interp-line.neutral { border-left-color: var(--gold); }
+.interp-k {
+  flex: 0 0 52px; font-weight: 700; color: var(--cinnabar);
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+}
+.interp-v { flex: 1; }
 .gua-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 @media (max-width: 720px) { .gua-grid { grid-template-columns: 1fr; } }
 .gua-card {
