@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Lunar } from 'lunar-typescript';
 import { qiGuaByNumbers, qiGuaByTime, MeiHuaResult, BAGUA } from '../lib/meihua';
+import { interpretMeiHua } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import InterpCard from './InterpCard';
 
 type Mode = 'time' | 'number';
 
@@ -123,6 +125,8 @@ export default function MeiHuaPage({ now }: { now: Date }) {
               本卦为事之始，互卦为事之中，变卦为事之终。体为己身，用为所占之事。
             </div>
           </div>
+
+          <InterpCard interp={interpretMeiHua(result)} />
         </>
       )}
     </div>

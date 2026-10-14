@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { paiQimen, QimenResult } from '../lib/qimen';
+import { interpretQimen } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import InterpCard from './InterpCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const GONG_NAME: Record<number, string> = { 1: '坎一', 2: '坤二', 3: '震三', 4: '巽四', 5: '中五', 6: '乾六', 7: '兑七', 8: '艮八', 9: '离九' };
@@ -81,6 +83,10 @@ export default function QimenPage({ now }: { now: Date }) {
             <span><i className="qm-dot gan" /> 天盘干/地盘干（右下）</span>
           </div>
         </div>
+      )}
+
+      {r && (
+        <InterpCard interp={interpretQimen(r)} />
       )}
     </div>
   );

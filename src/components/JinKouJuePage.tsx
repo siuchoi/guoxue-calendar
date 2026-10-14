@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { paiJinKouJue, JinKouJueResult } from '../lib/jinkoujue';
+import { interpretJinKouJue } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import InterpCard from './InterpCard';
 
 const DIZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 const DIFEN_DIR: Record<string, string> = {
@@ -81,6 +83,10 @@ export default function JinKouJuePage({ now }: { now: Date }) {
             课式：{r.difen}方问事，人元{r.renyuan.gan}（{r.renyuan.el}），贵神{r.guishen.star}（{r.guishen.gz}），将神{r.jiangshen.star}（{r.jiangshen.gz}）。
           </div>
         </div>
+      )}
+
+      {r && (
+        <InterpCard interp={interpretJinKouJue(r)} />
       )}
     </div>
   );

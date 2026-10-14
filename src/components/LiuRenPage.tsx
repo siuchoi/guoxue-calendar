@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Solar } from 'lunar-typescript';
 import { GAN, ZHI, YUE_JIANG_NAME, getYueJiang, paiLiuRen } from '../lib/liuren';
+import { interpretLiuRen } from '../lib/interpret';
+import InterpCard from './InterpCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -162,6 +164,8 @@ export default function LiuRenPage({ now }: Props) {
               </tbody>
             </table>
           </div>
+
+          <InterpCard interp={interpretLiuRen(r)} />
         </div>
       </div>
     </div>

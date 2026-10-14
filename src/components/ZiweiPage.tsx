@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { paiZiwei, ZiweiResult, PALACE_NAMES } from '../lib/ziwei';
+import { interpretZiwei } from '../lib/interpret';
+import InterpCard from './InterpCard';
 import { PROVINCES, DEFAULT_CITY } from '../lib/cities';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
@@ -114,6 +116,8 @@ export default function ZiweiPage({ now }: { now: Date }) {
           <p>输入出生时间与出生地，排紫微命盘。</p>
         </div>
       )}
+
+      {r && <InterpCard interp={interpretZiwei(r)} />}
     </div>
   );
 }

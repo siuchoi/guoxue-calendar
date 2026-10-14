@@ -4,7 +4,9 @@ import {
   paiLiuYao, linesFromNumbers, linesFromTime, coinToValue,
   GUA_SYM, YONG_SHEN_HINT, LiuYaoResult,
 } from '../lib/liuyao';
+import { interpretLiuYao } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
+import InterpCard from './InterpCard';
 
 type Mode = 'coin' | 'time' | 'num';
 
@@ -227,6 +229,8 @@ export default function LiuYaoPage({ now }: { now: Date }) {
               )}
             </div>
           </div>
+
+          <InterpCard interp={interpretLiuYao(result)} />
         </>
       ) : (
         <div className="card ly-empty">
