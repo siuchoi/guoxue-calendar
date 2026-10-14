@@ -1,5 +1,5 @@
 // 梅花易数回归：对照 metaphysics-steward test_meihua_regression.py 的 4 组用例
-const { qiGuaByNumbers, qiGuaByTime } = require('../../.test/meihua.cjs');
+const { qiGuaByNumbers, qiGuaByTime } = require('../../.test/meihua');
 
 let ok = 0, fail = 0;
 const check = (name, got, exp) => {

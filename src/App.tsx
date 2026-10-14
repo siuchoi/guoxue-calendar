@@ -7,8 +7,12 @@ import ClockPage from './components/ClockPage';
 import LiuRenPage from './components/LiuRenPage';
 import MeiHuaPage from './components/MeiHuaPage';
 import LiuYaoPage from './components/LiuYaoPage';
+import JinKouJuePage from './components/JinKouJuePage';
+import QimenPage from './components/QimenPage';
+import ZiweiPage from './components/ZiweiPage';
+import BaziPage from './components/BaziPage';
 
-type TabKey = 'calendar' | 'clock' | 'liuren' | 'meihua' | 'liuyao';
+type TabKey = 'calendar' | 'clock' | 'liuren' | 'meihua' | 'liuyao' | 'jinkoujue' | 'qimen' | 'ziwei' | 'bazi';
 
 function findCity(prov: string, city: string): City {
   const p = PROVINCES.find((x) => x.name === prov);
@@ -87,6 +91,10 @@ export default function App() {
         <button className={tab === 'liuren' ? 'active' : ''} onClick={() => setTab('liuren')}>六壬排盘</button>
         <button className={tab === 'meihua' ? 'active' : ''} onClick={() => setTab('meihua')}>梅花易数</button>
         <button className={tab === 'liuyao' ? 'active' : ''} onClick={() => setTab('liuyao')}>六爻排盘</button>
+        <button className={tab === 'jinkoujue' ? 'active' : ''} onClick={() => setTab('jinkoujue')}>金口诀</button>
+        <button className={tab === 'qimen' ? 'active' : ''} onClick={() => setTab('qimen')}>奇门遁甲</button>
+        <button className={tab === 'ziwei' ? 'active' : ''} onClick={() => setTab('ziwei')}>紫微斗数</button>
+        <button className={tab === 'bazi' ? 'active' : ''} onClick={() => setTab('bazi')}>八字合婚</button>
       </nav>
 
       {tab === 'calendar' && <CalendarPage now={now} city={city} />}
@@ -94,6 +102,10 @@ export default function App() {
       {tab === 'liuren' && <LiuRenPage now={now} />}
       {tab === 'meihua' && <MeiHuaPage now={now} />}
       {tab === 'liuyao' && <LiuYaoPage now={now} />}
+      {tab === 'jinkoujue' && <JinKouJuePage now={now} />}
+      {tab === 'qimen' && <QimenPage now={now} />}
+      {tab === 'ziwei' && <ZiweiPage now={now} />}
+      {tab === 'bazi' && <BaziPage now={now} />}
 
       <footer className="footer-note">
         观玄 · 历法数据由 lunar-typescript 推算 · 天气由 Open-Meteo 提供 · 真太阳时含经度与均时差修正

@@ -1,7 +1,7 @@
 // 黄金语料来源：https://github.com/superzhang21/metaphysics-steward (MIT)
 // 大六壬引擎全量回归：对照 metaphysics-steward 144 条黄金案例
 const fs = require('fs');
-const { paiLiuRen, ZHI, GAN } = require('../../.test/liuren.cjs');
+const { paiLiuRen, ZHI, GAN } = require('../../.test/liuren');
 
 const GOLDEN = JSON.parse(fs.readFileSync(__dirname + '/golden144.json', 'utf-8'));
 

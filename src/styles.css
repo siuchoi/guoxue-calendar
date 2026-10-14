@@ -65,10 +65,10 @@ body {
 .tabs { display: flex; gap: 6px; margin: 22px 0 18px; justify-content: center; }
 .tabs button {
   font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
-  font-size: 17px; letter-spacing: 3px;
+  font-size: 16px; letter-spacing: 2px;
   background: var(--card); border: 1px solid var(--line); color: var(--ink-light);
-  padding: 9px 26px; border-radius: 8px; cursor: pointer;
-  transition: all .2s;
+  padding: 9px 18px; border-radius: 8px; cursor: pointer;
+  transition: all .2s; white-space: nowrap;
 }
 .tabs button:hover { color: var(--cinnabar); }
 .tabs button.active {
@@ -413,3 +413,174 @@ body {
 .ly-summary b { color: var(--cinnabar); }
 .ly-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 420px; color: var(--ink-light); }
 .ly-empty div { font-size: 64px; color: var(--line); margin-bottom: 12px; }
+
+/* ── 金口诀 ── */
+.jkj-layout { display: grid; grid-template-columns: 420px 1fr; gap: 18px; align-items: start; }
+@media (max-width: 960px) { .jkj-layout { grid-template-columns: 1fr; } }
+.jkj-select {
+  font-family: inherit; font-size: 14px; padding: 7px 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink);
+}
+.jkj-meta { font-size: 14px; line-height: 2.1; color: var(--ink); }
+.jkj-meta b { color: var(--cinnabar); }
+.jkj-roll { color: var(--gold); font-style: normal; font-size: 12.5px; }
+.jkj-kong { color: var(--cinnabar); }
+
+.jkj-pan { text-align: center; }
+.jkj-layers { display: flex; flex-direction: column; align-items: center; padding: 8px 0; }
+.jkj-layer {
+  width: 300px; display: flex; align-items: center; gap: 14px;
+  background: var(--paper-deep); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 20px;
+}
+.jkj-layer-label {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 15px;
+  color: var(--ink-light); width: 44px; letter-spacing: 3px;
+}
+.jkj-layer-main { font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 30px; font-weight: 700; min-width: 76px; }
+.jkj-layer-sub { font-size: 16px; color: var(--ink); font-weight: 600; }
+.jkj-layer-el { margin-left: auto; font-size: 12.5px; color: var(--ink-light); }
+.jkj-connector { width: 1px; height: 14px; background: var(--line); }
+.jkj-summary { margin-top: 12px; font-size: 13.5px; color: var(--ink-light); line-height: 1.9; text-align: left; }
+
+/* 五行配色 */
+.el-mu { color: #3a7d44; }
+.el-huo { color: var(--cinnabar); }
+.el-tu { color: #a8763e; }
+.el-jin { color: #b8912a; }
+.el-shui { color: #3a6a8f; }
+
+/* ── 奇门遁甲 ── */
+.qm-layout { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: start; }
+@media (max-width: 960px) { .qm-layout { grid-template-columns: 1fr; } }
+.qm-meta { font-size: 15px; line-height: 2.2; color: var(--ink); }
+.qm-ju { font-size: 19px; margin-bottom: 4px; }
+.qm-ju b { font-size: 26px; font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; }
+.qm-yang { color: var(--cinnabar); font-weight: 700; margin-right: 6px; }
+.qm-yin { color: #3a6a8f; font-weight: 700; margin-right: 6px; }
+.qm-hl { color: var(--cinnabar); }
+.qm-legend { font-size: 12.5px; color: var(--ink-light); line-height: 2; }
+.qm-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.qm-dot.god { background: var(--gold); }
+.qm-dot.star { background: var(--ink); }
+.qm-dot.door { background: #3a6a8f; }
+.qm-dot.gan { background: var(--cinnabar); }
+
+.qm-pan-card { display: flex; justify-content: center; }
+.qm-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(120px, 170px)); grid-auto-rows: minmax(120px, 170px);
+  gap: 6px; width: 100%; max-width: 530px;
+}
+.qm-cell {
+  position: relative; background: var(--paper-deep); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column;
+}
+.qm-cell.center { background: var(--card); border-style: dashed; align-items: center; justify-content: center; }
+.qm-cell.zf { border-color: var(--cinnabar); box-shadow: 0 0 0 1px var(--cinnabar) inset; }
+.qm-cell.zs { background: #fdf3ec; }
+.qm-cell-head { display: flex; justify-content: space-between; align-items: baseline; }
+.qm-gong { font-size: 11px; color: var(--ink-light); }
+.qm-god { font-size: 13px; color: var(--gold); font-weight: 600; }
+.qm-star {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 34px; font-weight: 700; color: var(--ink);
+}
+.qm-cell-foot { display: flex; justify-content: space-between; align-items: baseline; }
+.qm-door { font-size: 15px; color: #3a6a8f; font-weight: 600; }
+.qm-gans { display: flex; gap: 8px; }
+.qm-tgan { font-size: 16px; color: var(--cinnabar); font-weight: 700; }
+.qm-dgan { font-size: 14px; color: var(--ink-light); }
+.qm-center-body { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.qm-dgan.big { font-size: 26px; color: var(--ink-light); font-weight: 700; }
+.qm-ji { font-size: 11px; color: var(--ink-light); }
+.qm-badge {
+  position: absolute; top: -8px; width: 22px; height: 22px; border-radius: 50%;
+  font-size: 12px; display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.qm-badge.zfb { right: -8px; background: var(--cinnabar); }
+.qm-badge.zsb { left: -8px; right: auto; background: #3a6a8f; }
+
+/* ── 紫微斗数 ── */
+.zw-layout { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
+@media (max-width: 1100px) { .zw-layout { grid-template-columns: 1fr; } }
+.zw-pan-card { display: flex; justify-content: center; }
+.zw-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
+  gap: 5px; width: 100%; max-width: 680px; aspect-ratio: 4 / 3.4;
+}
+.zw-cell {
+  background: var(--paper-deep); border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 8px; display: flex; flex-direction: column; overflow: hidden;
+}
+.zw-cell.ming { border-color: var(--cinnabar); box-shadow: 0 0 0 1px var(--cinnabar) inset; }
+.zw-cell-head { display: flex; justify-content: space-between; align-items: center; }
+.zw-palace { font-size: 11.5px; color: var(--ink-light); }
+.zw-badges { display: flex; gap: 3px; }
+.zw-badge {
+  font-size: 10px; width: 16px; height: 16px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 400;
+}
+.zw-badge.ming-b { background: var(--cinnabar); color: #fff; }
+.zw-badge.shen-b { border: 1px solid var(--gold); color: var(--gold); }
+.zw-stars { flex: 1; display: flex; flex-wrap: wrap; gap: 3px 7px; align-content: center; padding: 4px 0; }
+.zw-star { font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 15.5px; font-weight: 600; color: var(--ink); position: relative; }
+.zw-hua {
+  font-style: normal; font-size: 9.5px; padding: 0 3px; border-radius: 3px;
+  vertical-align: super; margin-left: 1px; color: #fff;
+}
+.hua-禄 { background: #3a7d44; }
+.hua-权 { background: var(--cinnabar); }
+.hua-科 { background: #3a6a8f; }
+.hua-忌 { background: #333; }
+.zw-gz { font-size: 11px; color: var(--ink-light); text-align: right; }
+.zw-center {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px; text-align: center;
+}
+.zw-center-title { font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 20px; font-weight: 700; color: var(--ink); }
+.zw-center-ju { font-size: 17px; color: var(--cinnabar); font-weight: 700; }
+.zw-center-line { font-size: 12.5px; color: var(--ink-light); }
+
+/* ── 八字 / 合婚 ── */
+.bz-form { padding: 4px 0; }
+.bz-form-title { font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 15px; color: var(--cinnabar); margin-bottom: 8px; letter-spacing: 2px; }
+.bz-forms-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 720px) { .bz-forms-2col { grid-template-columns: 1fr; } }
+
+.bz-table { width: 100%; border-collapse: collapse; text-align: center; }
+.bz-table th { font-size: 13px; color: var(--ink-light); font-weight: 400; padding: 6px; border-bottom: 1px solid var(--line); }
+.bz-table td { padding: 8px 6px; border-bottom: 1px dashed var(--line); font-size: 15px; }
+.bz-row-label { font-size: 12.5px; color: var(--ink-light); }
+.bz-shishen { color: var(--gold); font-size: 13.5px !important; }
+.bz-gz-row .bz-gan, .bz-gz-row .bz-zhi {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 26px; font-weight: 700; margin: 0 3px;
+}
+.bz-small { font-size: 12.5px !important; color: var(--ink-light); }
+
+.bz-dayun-head { font-size: 13.5px; color: var(--ink-light); margin-bottom: 8px; }
+.bz-dayun-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.bz-dayun-item {
+  display: flex; flex-direction: column; align-items: center; padding: 8px 14px;
+  background: var(--paper-deep); border: 1px solid var(--line); border-radius: 8px;
+}
+.bz-dayun-item b { font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 17px; color: var(--ink); }
+.bz-dayun-item span { font-size: 11.5px; color: var(--ink-light); margin-top: 3px; }
+
+.hh-score-card { display: flex; align-items: center; gap: 26px; }
+.hh-score {
+  width: 110px; height: 110px; border-radius: 50%; flex-shrink: 0;
+  border: 3px solid var(--cinnabar); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; background: #fdf3ec;
+}
+.hh-score-num { font-size: 34px; font-weight: 700; color: var(--cinnabar); font-family: Georgia, serif; }
+.hh-score-label { font-size: 10.5px; color: var(--ink-light); }
+.hh-verdict-text { font-size: 16.5px; color: var(--ink); font-weight: 600; line-height: 1.8; }
+.hh-gz-line { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; font-size: 12.5px; color: var(--ink-light); }
+.hh-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+@media (max-width: 900px) { .hh-sections { grid-template-columns: 1fr; } }
+.hh-section { padding: 14px 18px; }
+.hh-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.hh-sec-score { font-size: 15px; font-weight: 700; color: var(--ink-light); }
+.hh-sec-score.pos { color: #3a7d44; }
+.hh-sec-score.neg { color: var(--cinnabar); }
+.hh-notes { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink); line-height: 2; }

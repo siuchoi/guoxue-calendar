@@ -1,5 +1,5 @@
 // 六爻黄金案例回归（转自 metaphysics-steward test_liuyao_golden.py，MIT）
-const { paiLiuYao } = require('../../.test/liuyao.cjs');
+const { paiLiuYao } = require('../../.test/liuyao');
 
 let pass = 0, fail = 0;
 function check(name, got, expect) {
