@@ -34,9 +34,9 @@ export default function JinKouJuePage({ now }: { now: Date }) {
     : [];
 
   return (
-    <div className="jkj-layout">
+    <div className="page-stack">
       <div className="card">
-        <div className="section-title">起课</div>
+        <div className="section-title">金口诀 · 起课</div>
         <div className="mh-form">
           <label>时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
           <label>地分
@@ -47,19 +47,16 @@ export default function JinKouJuePage({ now }: { now: Date }) {
             </select>
           </label>
           <button className="ly-cast-btn" onClick={cast}>起课</button>
-        </div>
-        <div className="mh-hint" style={{ marginTop: 10 }}>
-          地分取占问方位或来人方位；民用时间起课，23 点后自动晚子换日
+          <span className="mh-hint">地分取占问方位或来人方位；23 点后自动晚子换日</span>
         </div>
 
         {r && (
-          <>
-            <div className="section-title">课元信息</div>
-            <div className="jkj-meta">
-              <div>{r.yearGz}年 {r.monthGz}月 {r.dayGan}{r.dayZhi}日 {r.hourGan}{r.hourZhi}时{r.rolled && <em className="jkj-roll">（晚子时已换日）</em>}</div>
-              <div>月将 <b>{r.yueJiang}</b>（{r.yueJiang && JIANG_FULL[r.yueJiang]}） · 日空 <b className="jkj-kong">{r.kong[0]}{r.kong[1]}</b> · 四大空亡 <b className="jkj-kong">{r.bigKong}</b></div>
-            </div>
-          </>
+          <div className="ty-row" style={{ marginTop: 14, marginBottom: 0 }}>
+            <span className="ty-chip ti">{r.yearGz}年 {r.monthGz}月 {r.dayGan}{r.dayZhi}日 {r.hourGan}{r.hourZhi}时{r.rolled && <em className="jkj-roll">（晚子已换日）</em>}</span>
+            <span className="ty-chip">月将 <b>{r.yueJiang}</b>（{r.yueJiang && JIANG_FULL[r.yueJiang]}）</span>
+            <span className="ty-chip">日空 <b className="jkj-kong">{r.kong[0]}{r.kong[1]}</b></span>
+            <span className="ty-chip dong">四大空亡 <b className="jkj-kong">{r.bigKong}</b></span>
+          </div>
         )}
       </div>
 

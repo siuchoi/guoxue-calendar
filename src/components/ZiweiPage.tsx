@@ -43,9 +43,9 @@ export default function ZiweiPage({ now }: { now: Date }) {
   };
 
   return (
-    <div className="zw-layout">
+    <div className="page-stack">
       <div className="card">
-        <div className="section-title">排盘</div>
+        <div className="section-title">紫微斗数 · 排盘</div>
         <div className="mh-form">
           <label>出生时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
           <label>出生地
@@ -57,21 +57,17 @@ export default function ZiweiPage({ now }: { now: Date }) {
             </select>
           </label>
           <button className="ly-cast-btn" onClick={cast}>排命盘</button>
-        </div>
-        <div className="mh-hint" style={{ marginTop: 10 }}>
-          按真太阳时排盘（含经度与均时差修正）；真太阳时 23 点后按晚子时换日
+          <span className="mh-hint">按真太阳时排盘（含经度与均时差修正），23 点后晚子时换日</span>
         </div>
 
         {r && (
-          <>
-            <div className="section-title">命盘概要</div>
-            <div className="jkj-meta">
-              <div>农历 {r.lunarText}{r.rolled && <em className="jkj-roll">（晚子时已换日）</em>}</div>
-              <div><b>{r.ju}</b> · 命宫在<b>{r.minggong}</b>（{r.minggongGz}） · 身宫在<b>{r.shengong}</b></div>
-              <div>命主 <b>{r.mingzhu}</b> · 身主 <b>{r.shenzhu}</b></div>
-              <div>四化：{r.sihua.map((x) => `${x.star}${x.hua}`).join('　')}</div>
-            </div>
-          </>
+          <div className="ty-row" style={{ marginTop: 14, marginBottom: 0 }}>
+            <span className="ty-chip ti">农历 {r.lunarText}{r.rolled && <em className="jkj-roll">（晚子已换日）</em>}</span>
+            <span className="ty-chip"><b>{r.ju}</b></span>
+            <span className="ty-chip">命宫<b>{r.minggong}</b>（{r.minggongGz}） · 身宫<b>{r.shengong}</b></span>
+            <span className="ty-chip">命主 {r.mingzhu} · 身主 {r.shenzhu}</span>
+            <span className="ty-chip dong">四化：{r.sihua.map((x) => `${x.star}${x.hua}`).join(' ')}</span>
+          </div>
         )}
       </div>
 

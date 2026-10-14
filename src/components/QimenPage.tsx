@@ -18,35 +18,25 @@ export default function QimenPage({ now }: { now: Date }) {
   };
 
   return (
-    <div className="qm-layout">
+    <div className="page-stack">
       <div className="card">
-        <div className="section-title">起局</div>
+        <div className="section-title">时家奇门 · 起局</div>
         <div className="mh-form">
           <label>时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
           <button className="ly-cast-btn" onClick={cast}>排盘</button>
+          <span className="mh-hint">拆补法 · 转盘法</span>
         </div>
-        <div className="mh-hint" style={{ marginTop: 10 }}>时家奇门 · 拆补法 · 转盘法</div>
 
         {r && (
-          <>
-            <div className="section-title">局象</div>
-            <div className="qm-meta">
-              <div className="qm-ju">
-                <span className={r.yang ? 'qm-yang' : 'qm-yin'}>{r.yang ? '阳遁' : '阴遁'}</span>
-                <b>{Math.abs(r.ju)}</b> 局
-              </div>
-              <div>旬首：<b>{r.xunShou}</b></div>
-              <div>值符：<b className="qm-hl">{r.zhifu.star}星</b> 落{GONG_NAME[r.zhifu.house]}宫</div>
-              <div>值使：<b className="qm-hl">{r.zhishi.door}门</b> 落{GONG_NAME[r.zhishi.house]}宫</div>
-            </div>
-            <div className="section-title">图例</div>
-            <div className="qm-legend">
-              <div><i className="qm-dot god" /> 八神（右上）</div>
-              <div><i className="qm-dot star" /> 九星（中）</div>
-              <div><i className="qm-dot door" /> 八门（左下）</div>
-              <div><i className="qm-dot gan" /> 天盘干/地盘干（右下）</div>
-            </div>
-          </>
+          <div className="ty-row" style={{ marginTop: 14, marginBottom: 0 }}>
+            <span className="ty-chip ti">
+              <span className={r.yang ? 'qm-yang' : 'qm-yin'}>{r.yang ? '阳遁' : '阴遁'}</span>
+              <b style={{ fontSize: 17 }}>{Math.abs(r.ju)}</b> 局
+            </span>
+            <span className="ty-chip">旬首 <b>{r.xunShou}</b></span>
+            <span className="ty-chip">值符 <b className="qm-hl">{r.zhifu.star}星</b> 落{GONG_NAME[r.zhifu.house]}宫</span>
+            <span className="ty-chip dong">值使 <b className="qm-hl">{r.zhishi.door}门</b> 落{GONG_NAME[r.zhishi.house]}宫</span>
+          </div>
         )}
       </div>
 
@@ -82,6 +72,12 @@ export default function QimenPage({ now }: { now: Date }) {
                 </div>
               );
             })}
+          </div>
+          <div className="qm-legend">
+            <span><i className="qm-dot god" /> 八神（右上）</span>
+            <span><i className="qm-dot star" /> 九星（中）</span>
+            <span><i className="qm-dot door" /> 八门（左下）</span>
+            <span><i className="qm-dot gan" /> 天盘干/地盘干（右下）</span>
           </div>
         </div>
       )}

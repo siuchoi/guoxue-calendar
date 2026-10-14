@@ -113,56 +113,109 @@ export default function LiuYaoPage({ now }: { now: Date }) {
   };
 
   return (
-    <div className="ly-layout">
-      {/* 左：起卦 */}
-      <div>
-        <div className="card">
-          <div className="mh-mode">
-            <button className={mode === 'coin' ? 'on' : ''} onClick={() => setMode('coin')}>摇铜钱</button>
-            <button className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>时间起卦</button>
-            <button className={mode === 'num' ? 'on' : ''} onClick={() => setMode('num')}>数字起卦</button>
-          </div>
-
-          {mode === 'coin' && (
-            <div className="ly-coin-area">
-              <Coins backs={coins} spinning={spinning} />
-              <div className="ly-coin-btns">
-                <button className="ly-cast-btn" onClick={castOnce} disabled={spinning || lines.length >= 6}>
-                  {lines.length >= 6 ? '六爻已成' : spinning ? '摇卦中…' : `摇第${['', '一', '二', '三', '四', '五', '六'][lines.length + 1]}爻`}
-                </button>
-                {(lines.length > 0 || result) && <button className="ly-reset-btn" onClick={reset}>重摇</button>}
-              </div>
-              {lines.length > 0 && (
-                <div className="ly-cast-history">
-                  {lines.map((v, i) => (
-                    <div key={i} className="ly-cast-item">
-                      <b>{YAO_NAME[i + 1]}</b> {VALUE_TEXT[v]}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {mode === 'time' && (
-            <div className="mh-form">
-              <label>起卦时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
-              <button className="ly-cast-btn" onClick={castByTime}>起卦排盘</button>
-              <div className="mh-hint">以农历年月日时起卦（梅花数法）</div>
-            </div>
-          )}
-
-          {mode === 'num' && (
-            <div className="mh-form">
-              <input placeholder="上卦数" value={nums[0]} onChange={(e) => setNums([e.target.value, nums[1], nums[2]])} />
-              <input placeholder="下卦数" value={nums[1]} onChange={(e) => setNums([nums[0], e.target.value, nums[2]])} />
-              <input placeholder="动爻数" value={nums[2]} onChange={(e) => setNums([nums[0], nums[1], e.target.value])} />
-              <button className="ly-cast-btn" onClick={castByNums}>起卦排盘</button>
-            </div>
-          )}
+    <div className="page-stack">
+      {/* 起卦 */}
+      <div className="card">
+        <div className="mh-mode">
+          <button className={mode === 'coin' ? 'on' : ''} onClick={() => setMode('coin')}>摇铜钱</button>
+          <button className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>时间起卦</button>
+          <button className={mode === 'num' ? 'on' : ''} onClick={() => setMode('num')}>数字起卦</button>
         </div>
 
-        {result && (
+        {mode === 'coin' && (
+          <div className="ly-coin-area">
+            <Coins backs={coins} spinning={spinning} />
+            <div className="ly-coin-btns">
+              <button className="ly-cast-btn" onClick={castOnce} disabled={spinning || lines.length >= 6}>
+                {lines.length >= 6 ? '六爻已成' : spinning ? '摇卦中…' : `摇第${['', '一', '二', '三', '四', '五', '六'][lines.length + 1]}爻`}
+              </button>
+              {(lines.length > 0 || result) && <button className="ly-reset-btn" onClick={reset}>重摇</button>}
+            </div>
+            {lines.length > 0 && (
+              <div className="ly-cast-history">
+                {lines.map((v, i) => (
+                  <div key={i} className="ly-cast-item">
+                    <b>{YAO_NAME[i + 1]}</b> {VALUE_TEXT[v]}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {mode === 'time' && (
+          <div className="mh-form">
+            <label>起卦时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
+            <button className="ly-cast-btn" onClick={castByTime}>起卦排盘</button>
+            <div className="mh-hint">以农历年月日时起卦（梅花数法）</div>
+          </div>
+        )}
+
+        {mode === 'num' && (
+          <div className="mh-form">
+            <input placeholder="上卦数" value={nums[0]} onChange={(e) => setNums([e.target.value, nums[1], nums[2]])} />
+            <input placeholder="下卦数" value={nums[1]} onChange={(e) => setNums([nums[0], e.target.value, nums[2]])} />
+            <input placeholder="动爻数" value={nums[2]} onChange={(e) => setNums([nums[0], nums[1], e.target.value])} />
+            <button className="ly-cast-btn" onClick={castByNums}>起卦排盘</button>
+          </div>
+        )}
+      </div>
+
+      {/* 卦盘 */}
+      {result ? (
+        <>
+          <div className="card ly-pan">
+            <div className="ly-pan-head">
+              <div>
+                <span className="ly-gua-name">{GUA_SYM[result.ben.upperNum]}{GUA_SYM[result.ben.lowerNum]} {result.ben.name}</span>
+                <span className="ly-gua-gong">{result.ben.gong}宫 · {result.ben.gongWuxing}</span>
+                {result.bian && (
+                  <>
+                    <span className="ly-arrow">→</span>
+                    <span className="ly-gua-name bian">{GUA_SYM[result.bian.upperNum]}{GUA_SYM[result.bian.lowerNum]} {result.bian.name}</span>
+                    <span className="ly-gua-gong">{result.bian.gong}宫</span>
+                  </>
+                )}
+              </div>
+              <div className="mh-hint">
+                {result.method} · {usedTime.getFullYear()}-{pad(usedTime.getMonth() + 1)}-{pad(usedTime.getDate())} · 日辰 {result.dayGan}{result.dayZhi} · 月建 {result.monthZhi}
+              </div>
+            </div>
+
+            <div className="ly-lines">
+              {[5, 4, 3, 2, 1, 0].map((i) => {
+                const pos = i + 1;
+                const isShi = result.ben.shi === pos;
+                const isYing = result.ben.ying === pos;
+                const isDong = result.moving.includes(pos);
+                return (
+                  <div key={pos} className={'ly-line' + (isDong ? ' dong' : '')}>
+                    <span className="ly-shen">{result.liushen[i]}</span>
+                    <YaoLine yang={result.yangs[i]} dong={isDong} big />
+                    <span className="ly-qin">{result.ben.liuqin[i]}</span>
+                    <span className="ly-na">{result.ben.najia[i]}</span>
+                    <span className="ly-mark">
+                      {isShi && <b className="shi">世</b>}
+                      {isYing && <b className="ying">应</b>}
+                    </span>
+                    {result.bian && (
+                      <span className="ly-bian-part">
+                        {isDong ? '→' : ''}
+                        <YaoLine yang={result.bian.yangs[i]} />
+                        <span className="ly-qin dim">{result.bian.liuqin[i]}</span>
+                        <span className="ly-na dim">{result.bian.najia[i]}</span>
+                        <span className="ly-mark">
+                          {result.bian.shi === pos && <b className="shi dim">世</b>}
+                          {result.bian.ying === pos && <b className="ying dim">应</b>}
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="card">
             <div className="section-title">卦断参考</div>
             <div className="ly-summary">
@@ -173,62 +226,7 @@ export default function LiuYaoPage({ now }: { now: Date }) {
               )}
             </div>
           </div>
-        )}
-      </div>
-
-      {/* 右：卦盘 */}
-      {result ? (
-        <div className="card ly-pan">
-          <div className="ly-pan-head">
-            <div>
-              <span className="ly-gua-name">{GUA_SYM[result.ben.upperNum]}{GUA_SYM[result.ben.lowerNum]} {result.ben.name}</span>
-              <span className="ly-gua-gong">{result.ben.gong}宫 · {result.ben.gongWuxing}</span>
-              {result.bian && (
-                <>
-                  <span className="ly-arrow">→</span>
-                  <span className="ly-gua-name bian">{GUA_SYM[result.bian.upperNum]}{GUA_SYM[result.bian.lowerNum]} {result.bian.name}</span>
-                  <span className="ly-gua-gong">{result.bian.gong}宫</span>
-                </>
-              )}
-            </div>
-            <div className="mh-hint">
-              {result.method} · {usedTime.getFullYear()}-{pad(usedTime.getMonth() + 1)}-{pad(usedTime.getDate())} · 日辰 {result.dayGan}{result.dayZhi} · 月建 {result.monthZhi}
-            </div>
-          </div>
-
-          <div className="ly-lines">
-            {[5, 4, 3, 2, 1, 0].map((i) => {
-              const pos = i + 1;
-              const isShi = result.ben.shi === pos;
-              const isYing = result.ben.ying === pos;
-              const isDong = result.moving.includes(pos);
-              return (
-                <div key={pos} className={'ly-line' + (isDong ? ' dong' : '')}>
-                  <span className="ly-shen">{result.liushen[i]}</span>
-                  <YaoLine yang={result.yangs[i]} dong={isDong} big />
-                  <span className="ly-qin">{result.ben.liuqin[i]}</span>
-                  <span className="ly-na">{result.ben.najia[i]}</span>
-                  <span className="ly-mark">
-                    {isShi && <b className="shi">世</b>}
-                    {isYing && <b className="ying">应</b>}
-                  </span>
-                  {result.bian && (
-                    <span className="ly-bian-part">
-                      {isDong ? '→' : ''}
-                      <YaoLine yang={result.bian.yangs[i]} />
-                      <span className="ly-qin dim">{result.bian.liuqin[i]}</span>
-                      <span className="ly-na dim">{result.bian.najia[i]}</span>
-                      <span className="ly-mark">
-                        {result.bian.shi === pos && <b className="shi dim">世</b>}
-                        {result.bian.ying === pos && <b className="ying dim">应</b>}
-                      </span>
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        </>
       ) : (
         <div className="card ly-empty">
           <div>☯</div>

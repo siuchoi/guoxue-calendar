@@ -13,6 +13,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* 滚动条占位常驻：高低页面切换 tab 时内容宽度不跳动 */
+html { scrollbar-gutter: stable; overflow-y: scroll; }
+
 body {
   background: var(--paper);
   color: var(--ink);
@@ -24,6 +27,9 @@ body {
 }
 
 #root { max-width: 1180px; margin: 0 auto; padding: 18px 20px 60px; }
+
+/* 排盘类页面统一纵向节奏：通栏起课卡 + 结果卡 */
+.page-stack > * + * { margin-top: 18px; }
 
 /* ── 头部 ── */
 .app-header {
@@ -328,8 +334,6 @@ body {
 .ty-verdict b { color: var(--cinnabar); font-size: 17px; margin-right: 4px; }
 
 /* ── 六爻排盘 ── */
-.ly-layout { display: grid; grid-template-columns: 400px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 960px) { .ly-layout { grid-template-columns: 1fr; } }
 
 /* 铜钱 */
 .ly-coin-area { text-align: center; padding: 10px 0 4px; }
@@ -365,7 +369,10 @@ body {
   font-size: 14px; background: transparent; color: var(--ink-light);
   border: 1px solid var(--line); border-radius: 8px; padding: 8px 18px; cursor: pointer;
 }
-.ly-cast-history { margin-top: 10px; text-align: left; border-top: 1px dashed var(--line); padding-top: 10px; }
+.ly-cast-history {
+  margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px;
+  display: flex; flex-wrap: wrap; gap: 4px 26px; justify-content: center; text-align: center;
+}
 .ly-cast-item { font-size: 14px; color: var(--ink); line-height: 2; }
 .ly-cast-item b { color: var(--cinnabar); margin-right: 8px; }
 
@@ -376,10 +383,11 @@ body {
 .ly-gua-name.bian { color: var(--cinnabar); }
 .ly-gua-gong { font-size: 13px; color: var(--ink-light); margin-left: 10px; }
 .ly-arrow { color: var(--cinnabar); margin: 0 12px; font-size: 18px; }
-.ly-lines { display: flex; flex-direction: column; gap: 4px; }
+.ly-lines { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .ly-line {
   display: flex; align-items: center; gap: 14px;
   padding: 7px 12px; border-radius: 8px; font-size: 15px;
+  width: 100%; max-width: 880px;
 }
 .ly-line.dong { background: #fdf3ec; border: 1px solid #ecc9b8; }
 .ly-shen { width: 40px; font-size: 13px; color: var(--gold); }
@@ -415,8 +423,6 @@ body {
 .ly-empty div { font-size: 64px; color: var(--line); margin-bottom: 12px; }
 
 /* ── 金口诀 ── */
-.jkj-layout { display: grid; grid-template-columns: 420px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 960px) { .jkj-layout { grid-template-columns: 1fr; } }
 .jkj-select {
   font-family: inherit; font-size: 14px; padding: 7px 10px;
   border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink);
@@ -441,7 +447,7 @@ body {
 .jkj-layer-sub { font-size: 16px; color: var(--ink); font-weight: 600; }
 .jkj-layer-el { margin-left: auto; font-size: 12.5px; color: var(--ink-light); }
 .jkj-connector { width: 1px; height: 14px; background: var(--line); }
-.jkj-summary { margin-top: 12px; font-size: 13.5px; color: var(--ink-light); line-height: 1.9; text-align: left; }
+.jkj-summary { margin: 12px auto 0; max-width: 560px; font-size: 13.5px; color: var(--ink-light); line-height: 1.9; }
 
 /* 五行配色 */
 .el-mu { color: #3a7d44; }
@@ -451,22 +457,23 @@ body {
 .el-shui { color: #3a6a8f; }
 
 /* ── 奇门遁甲 ── */
-.qm-layout { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 960px) { .qm-layout { grid-template-columns: 1fr; } }
 .qm-meta { font-size: 15px; line-height: 2.2; color: var(--ink); }
 .qm-ju { font-size: 19px; margin-bottom: 4px; }
 .qm-ju b { font-size: 26px; font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; }
 .qm-yang { color: var(--cinnabar); font-weight: 700; margin-right: 6px; }
 .qm-yin { color: #3a6a8f; font-weight: 700; margin-right: 6px; }
 .qm-hl { color: var(--cinnabar); }
-.qm-legend { font-size: 12.5px; color: var(--ink-light); line-height: 2; }
+.qm-legend {
+  display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+  margin-top: 16px; font-size: 12.5px; color: var(--ink-light);
+}
 .qm-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
 .qm-dot.god { background: var(--gold); }
 .qm-dot.star { background: var(--ink); }
 .qm-dot.door { background: #3a6a8f; }
 .qm-dot.gan { background: var(--cinnabar); }
 
-.qm-pan-card { display: flex; justify-content: center; }
+.qm-pan-card { display: flex; flex-direction: column; align-items: center; }
 .qm-grid {
   display: grid; grid-template-columns: repeat(3, minmax(120px, 170px)); grid-auto-rows: minmax(120px, 170px);
   gap: 6px; width: 100%; max-width: 530px;
@@ -501,8 +508,6 @@ body {
 .qm-badge.zsb { left: -8px; right: auto; background: #3a6a8f; }
 
 /* ── 紫微斗数 ── */
-.zw-layout { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 1100px) { .zw-layout { grid-template-columns: 1fr; } }
 .zw-pan-card { display: flex; justify-content: center; }
 .zw-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);

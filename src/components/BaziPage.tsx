@@ -121,7 +121,7 @@ export default function BaziPage({ now }: { now: Date }) {
   };
 
   return (
-    <div>
+    <div className="page-stack">
       <div className="card">
         <div className="mh-mode">
           <button className={mode === 'single' ? 'on' : ''} onClick={() => setMode('single')}>八字排盘</button>
