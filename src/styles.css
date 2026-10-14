@@ -199,6 +199,52 @@ body {
   font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-weight: 700;
 }
 
+/* ── 玩法说明卡（GuideCard）── */
+.guide-card {
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  margin: 4px 0 14px;
+  font-size: 13.5px;
+}
+.guide-card[open] summary.guide-head { border-bottom: 1px dashed var(--line); }
+.guide-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; cursor: pointer;
+  list-style: none; user-select: none;
+  border-radius: 8px;
+}
+.guide-head::-webkit-details-marker { display: none; }
+.guide-head::after {
+  content: "▾"; margin-left: auto; color: var(--ink-light);
+  font-size: 12px; transition: transform 0.2s;
+}
+.guide-card:not([open]) .guide-head::after { transform: rotate(-90deg); }
+.guide-badge {
+  background: var(--gold); color: #fff;
+  font-size: 11px; letter-spacing: 2px; padding: 2px 8px;
+  border-radius: 4px; flex-shrink: 0;
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+}
+.guide-title { font-weight: 700; font-size: 14px; letter-spacing: 1px; color: var(--ink); }
+.guide-body { padding: 12px 14px 14px; }
+.guide-intro { color: var(--ink); line-height: 1.9; margin-bottom: 8px; }
+.guide-intro::before { content: "✦ "; color: var(--gold); }
+.guide-step { display: flex; gap: 10px; line-height: 1.85; padding: 3px 0; align-items: baseline; }
+.guide-k {
+  flex-shrink: 0; min-width: 52px; text-align: center;
+  background: var(--card); border: 1px solid var(--line);
+  color: var(--cinnabar); font-size: 12px; padding: 1px 8px; border-radius: 10px;
+  font-weight: 700; letter-spacing: 1px;
+}
+.guide-v { color: var(--ink); }
+.guide-note {
+  margin-top: 10px; padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  color: var(--ink-light); font-size: 12.5px; line-height: 1.8;
+}
+
 /* ── 四柱 ── */
 .sizhu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .pillar {

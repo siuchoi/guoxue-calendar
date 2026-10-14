@@ -7,6 +7,7 @@ import {
 import { interpretLiuYao } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 import InterpCard from './InterpCard';
+import GuideCard from './GuideCard';
 
 type Mode = 'coin' | 'time' | 'num';
 
@@ -119,6 +120,8 @@ export default function LiuYaoPage({ now }: { now: Date }) {
     <div className="page-stack">
       {/* 起卦 */}
       <div className="card">
+        <div className="section-title" style={{ marginTop: 0 }}>六爻 · 摇卦</div>
+        <GuideCard id="liuyao" />
         <div className="mh-mode">
           <button className={mode === 'coin' ? 'on' : ''} onClick={() => setMode('coin')}>摇铜钱</button>
           <button className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>时间起卦</button>

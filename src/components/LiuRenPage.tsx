@@ -3,6 +3,7 @@ import { Solar } from 'lunar-typescript';
 import { GAN, ZHI, YUE_JIANG_NAME, getYueJiang, paiLiuRen } from '../lib/liuren';
 import { interpretLiuRen } from '../lib/interpret';
 import InterpCard from './InterpCard';
+import GuideCard from './GuideCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -62,7 +63,8 @@ export default function LiuRenPage({ now }: Props) {
   return (
     <div>
       <div className="card" style={{ marginBottom: 18 }}>
-        <h2>六壬排盘</h2>
+        <div className="section-title" style={{ marginTop: 0 }}>六壬 · 排盘</div>
+        <GuideCard id="liuren" />
         <div className="lr-form">
           <label>占日 <input type="date" value={dateStr} onChange={(e) => setDateStr(e.target.value)} /></label>
           <label>占时 <input type="number" min={0} max={23} value={hour} onChange={(e) => setHour(Number(e.target.value))} style={{ width: 70 }} /> 时</label>

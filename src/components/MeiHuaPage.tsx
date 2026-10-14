@@ -4,6 +4,7 @@ import { qiGuaByNumbers, qiGuaByTime, MeiHuaResult, BAGUA } from '../lib/meihua'
 import { interpretMeiHua } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 import InterpCard from './InterpCard';
+import GuideCard from './GuideCard';
 
 type Mode = 'time' | 'number';
 
@@ -74,7 +75,8 @@ export default function MeiHuaPage({ now }: { now: Date }) {
   return (
     <div>
       <div className="card" style={{ marginBottom: 18 }}>
-        <div className="section-title">梅花易数 · 起卦</div>
+        <div className="section-title" style={{ marginTop: 0 }}>梅花易数 · 起卦</div>
+        <GuideCard id="meihua" />
         <div className="mh-mode">
           <button className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>时间起卦</button>
           <button className={mode === 'number' ? 'on' : ''} onClick={() => setMode('number')}>数字起卦</button>

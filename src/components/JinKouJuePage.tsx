@@ -3,6 +3,7 @@ import { paiJinKouJue, JinKouJueResult } from '../lib/jinkoujue';
 import { interpretJinKouJue } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 import InterpCard from './InterpCard';
+import GuideCard from './GuideCard';
 
 const DIZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 const DIFEN_DIR: Record<string, string> = {
@@ -39,7 +40,8 @@ export default function JinKouJuePage({ now }: { now: Date }) {
   return (
     <div className="page-stack">
       <div className="card">
-        <div className="section-title">金口诀 · 起课</div>
+        <div className="section-title" style={{ marginTop: 0 }}>金口诀 · 起课</div>
+        <GuideCard id="jinkoujue" />
         <div className="mh-form">
           <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="时间" />
           <label>地分

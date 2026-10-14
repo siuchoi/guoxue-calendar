@@ -3,6 +3,7 @@ import { paiQimen, QimenResult } from '../lib/qimen';
 import { interpretQimen } from '../lib/interpret';
 import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 import InterpCard from './InterpCard';
+import GuideCard from './GuideCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const GONG_NAME: Record<number, string> = { 1: '坎一', 2: '坤二', 3: '震三', 4: '巽四', 5: '中五', 6: '乾六', 7: '兑七', 8: '艮八', 9: '离九' };
@@ -23,7 +24,8 @@ export default function QimenPage({ now }: { now: Date }) {
   return (
     <div className="page-stack">
       <div className="card">
-        <div className="section-title">时家奇门 · 起局</div>
+        <div className="section-title" style={{ marginTop: 0 }}>时家奇门 · 起局</div>
+        <GuideCard id="qimen" />
         <div className="mh-form">
           <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="时间" />
           <button className="ly-cast-btn" onClick={cast}>排盘</button>
