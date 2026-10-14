@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { Solar } from 'lunar-typescript';
 import { City } from '../lib/cities';
 import { SHI_CHEN_INFO, hourToShiChen } from '../lib/truesolar';
 import { ZHI } from '../lib/liuren';
+
+/** 二十四节气（自冬至起，每 15° 一个）：n=名称，t=节/气 */
+const JIE_QI: { n: string; t: '节' | '气' }[] = [
+  { n: '冬至', t: '气' }, { n: '小寒', t: '节' }, { n: '大寒', t: '气' },
+  { n: '立春', t: '节' }, { n: '雨水', t: '气' }, { n: '惊蛰', t: '节' },
+  { n: '春分', t: '气' }, { n: '清明', t: '节' }, { n: '谷雨', t: '气' },
+  { n: '立夏', t: '节' }, { n: '小满', t: '气' }, { n: '芒种', t: '节' },
+  { n: '夏至', t: '气' }, { n: '小暑', t: '节' }, { n: '大暑', t: '气' },
+  { n: '立秋', t: '节' }, { n: '处暑', t: '气' }, { n: '白露', t: '节' },
+  { n: '秋分', t: '气' }, { n: '寒露', t: '节' }, { n: '霜降', t: '气' },
+  { n: '立冬', t: '节' }, { n: '小雪', t: '气' }, { n: '大雪', t: '节' },
+];
 
 interface Props { now: Date; city: City; trueTime: Date }
 
@@ -68,6 +81,9 @@ function SecondsOrbit({ cx, cy, orbit }: { cx: number; cy: number; orbit: number
 export default function ClockPage({ now, city, trueTime }: Props) {
   const bjSC = hourToShiChen(now.getHours());
   const trueSC = hourToShiChen(trueTime.getHours());
+  const lunar = Solar.fromDate(now).getLunar();
+  const curJieQi = lunar.getPrevJieQi(true).getName();
+  const isDay = trueTime.getHours() >= 6 && trueTime.getHours() < 18;
 
   const R = 200, cx = 230, cy = 230, R0 = 116;
   // 子时正中=正上方，每时辰 30°
@@ -107,7 +123,7 @@ export default function ClockPage({ now, city, trueTime }: Props) {
             {/* 秒针轨道：彗星级拖尾（外圈双环之间） */}
             <SecondsOrbit cx={cx} cy={cy} orbit={R + 9} />
 
-            {/* 十二时辰扇区 */}
+            {/* 十二时辰扇区：默认统一暗色素底，仅当前时辰亮彩色 */}
             {SHI_CHEN_INFO.map((sc) => {
               const isTrue = sc.zhi === trueSC;
               const isBj = sc.zhi === bjSC && !isTrue;
@@ -119,26 +135,56 @@ export default function ClockPage({ now, city, trueTime }: Props) {
                 <g key={sc.zhi}>
                   <path
                     d={sector(sc.zhi)}
-                    fill={color}
-                    fillOpacity={isTrue ? 0.95 : isBj ? 0.5 : 0.24}
-                    stroke={isTrue ? color : 'var(--card)'}
-                    strokeWidth={isTrue ? 2.5 : 1.5}
+                    fill={isTrue ? color : '#8F8674'}
+                    fillOpacity={isTrue ? 0.95 : isBj ? 0.32 : 0.13}
+                    stroke={isTrue ? color : 'none'}
+                    strokeWidth={isTrue ? 2.5 : 0}
                   />
                   <text
-                    x={tx} y={ty - 4} textAnchor="middle"
-                    fontSize={isTrue ? 22 : 19} fontWeight={700} fontFamily={KAITI}
+                    x={tx} y={ty + 4} textAnchor="middle"
+                    fontSize={isTrue ? 27 : 19} fontWeight={700} fontFamily={KAITI}
                     fill={isTrue ? '#fff' : 'var(--ink)'}
                   >
                     {sc.name[0]}
                   </text>
-                  <text
-                    x={tx} y={ty + 15} textAnchor="middle" fontSize={10.5}
-                    fill={isTrue ? 'rgba(255,255,255,0.9)' : 'var(--ink-light)'}
-                    style={{ fontVariantNumeric: 'tabular-nums' }}
-                  >
-                    {sc.range.slice(0, 5)}
-                  </text>
                 </g>
+              );
+            })}
+
+            {/* 24 小时数字：放在扇区之后绘制，满色高亮也不遮挡；白描边保证亮底可读 */}
+            {Array.from({ length: 24 }).map((_, h) => {
+              const a = h * 15 * (Math.PI / 180) - Math.PI / 2;
+              const r = 186;
+              return (
+                <text
+                  key={h}
+                  x={cx + r * Math.cos(a)} y={cy + r * Math.sin(a)}
+                  textAnchor="middle" dominantBaseline="central" fontSize={9.5}
+                  fill="var(--ink-light)"
+                  style={{ fontVariantNumeric: 'tabular-nums', paintOrder: 'stroke', stroke: 'var(--card)', strokeWidth: 2.5 }}
+                >
+                  {pad(h)}
+                </text>
+              );
+            })}
+
+            {/* 二十四节气环：按天文角度排布（冬至=子正、夏至=午正），节红气绿，当前节气加粗 */}
+            {JIE_QI.map((jq, i) => {
+              const a = i * 15 * (Math.PI / 180) - Math.PI / 2;
+              const r = 131;
+              const isCur = jq.n === curJieQi;
+              return (
+                <text
+                  key={jq.n}
+                  x={cx + r * Math.cos(a)} y={cy + r * Math.sin(a)}
+                  textAnchor="middle" dominantBaseline="central"
+                  fontSize={isCur ? 12.5 : 10.5} fontWeight={isCur ? 700 : 400} fontFamily={KAITI}
+                  fill={isCur ? 'var(--cinnabar)' : jq.t === '节' ? '#B5482E' : '#5E8575'}
+                  fillOpacity={1}
+                  style={{ paintOrder: 'stroke', stroke: 'var(--card)', strokeWidth: 2 }}
+                >
+                  {jq.n}
+                </text>
               );
             })}
 
@@ -160,6 +206,9 @@ export default function ClockPage({ now, city, trueTime }: Props) {
           </svg>
         </div>
         <div className="time-readout">
+          <div className="sc">
+            {lunar.getYearInGanZhi()}年 · {lunar.getMonthInGanZhi()}月 · <b style={{ color: 'var(--cinnabar)' }}>{curJieQi}</b> · {isDay ? '昼' : '夜'}
+          </div>
           <div className="sc">
             北京 {SHI_CHEN_INFO[bjSC].name}（{ZHI[bjSC]}） · 真太阳 {SHI_CHEN_INFO[trueSC].name}（{ZHI[trueSC]}）
           </div>
