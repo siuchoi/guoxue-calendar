@@ -6,8 +6,9 @@ import CalendarPage from './components/CalendarPage';
 import ClockPage from './components/ClockPage';
 import LiuRenPage from './components/LiuRenPage';
 import MeiHuaPage from './components/MeiHuaPage';
+import LiuYaoPage from './components/LiuYaoPage';
 
-type TabKey = 'calendar' | 'clock' | 'liuren' | 'meihua';
+type TabKey = 'calendar' | 'clock' | 'liuren' | 'meihua' | 'liuyao';
 
 function findCity(prov: string, city: string): City {
   const p = PROVINCES.find((x) => x.name === prov);
@@ -85,12 +86,14 @@ export default function App() {
         <button className={tab === 'clock' ? 'active' : ''} onClick={() => setTab('clock')}>地支时钟</button>
         <button className={tab === 'liuren' ? 'active' : ''} onClick={() => setTab('liuren')}>六壬排盘</button>
         <button className={tab === 'meihua' ? 'active' : ''} onClick={() => setTab('meihua')}>梅花易数</button>
+        <button className={tab === 'liuyao' ? 'active' : ''} onClick={() => setTab('liuyao')}>六爻排盘</button>
       </nav>
 
       {tab === 'calendar' && <CalendarPage now={now} city={city} />}
       {tab === 'clock' && <ClockPage now={now} city={city} trueTime={trueTime} />}
       {tab === 'liuren' && <LiuRenPage now={now} />}
       {tab === 'meihua' && <MeiHuaPage now={now} />}
+      {tab === 'liuyao' && <LiuYaoPage now={now} />}
 
       <footer className="footer-note">
         观玄 · 历法数据由 lunar-typescript 推算 · 天气由 Open-Meteo 提供 · 真太阳时含经度与均时差修正

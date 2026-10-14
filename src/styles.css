@@ -326,3 +326,90 @@ body {
 .ty-chip.dong { border-color: var(--gold); color: var(--gold); }
 .ty-verdict { font-size: 15.5px; line-height: 1.9; color: var(--ink); }
 .ty-verdict b { color: var(--cinnabar); font-size: 17px; margin-right: 4px; }
+
+/* ── 六爻排盘 ── */
+.ly-layout { display: grid; grid-template-columns: 400px 1fr; gap: 18px; align-items: start; }
+@media (max-width: 960px) { .ly-layout { grid-template-columns: 1fr; } }
+
+/* 铜钱 */
+.ly-coin-area { text-align: center; padding: 10px 0 4px; }
+.ly-coins { display: flex; justify-content: center; gap: 22px; margin: 12px 0 18px; }
+.ly-coin {
+  width: 66px; height: 66px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e8cd82, #c9a54a 62%, #a8863a);
+  border: 2px solid #96742e;
+  box-shadow: 0 3px 8px rgba(60, 45, 10, .35), inset 0 1px 3px rgba(255,255,255,.5);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.ly-coin-face {
+  position: relative; z-index: 1; font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+  font-size: 20px; font-weight: 700; color: #5d471a;
+  text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+.ly-coin.spinning { animation: coinFlip .18s linear infinite; }
+@keyframes coinFlip {
+  0% { transform: rotateY(0) translateY(0); }
+  50% { transform: rotateY(90deg) translateY(-6px); }
+  100% { transform: rotateY(0) translateY(0); }
+}
+.ly-coin-btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
+.ly-cast-btn {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 16px; letter-spacing: 2px;
+  background: var(--cinnabar); color: #fff; border: none; border-radius: 8px;
+  padding: 9px 26px; cursor: pointer; transition: all .2s;
+}
+.ly-cast-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.ly-cast-btn:disabled { background: var(--line); color: var(--ink-light); cursor: default; }
+.ly-reset-btn {
+  font-size: 14px; background: transparent; color: var(--ink-light);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 18px; cursor: pointer;
+}
+.ly-cast-history { margin-top: 10px; text-align: left; border-top: 1px dashed var(--line); padding-top: 10px; }
+.ly-cast-item { font-size: 14px; color: var(--ink); line-height: 2; }
+.ly-cast-item b { color: var(--cinnabar); margin-right: 8px; }
+
+/* 卦盘 */
+.ly-pan-head { margin-bottom: 14px; }
+.ly-pan-head .mh-hint { margin-top: 6px; }
+.ly-gua-name { font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 24px; font-weight: 700; color: var(--ink); }
+.ly-gua-name.bian { color: var(--cinnabar); }
+.ly-gua-gong { font-size: 13px; color: var(--ink-light); margin-left: 10px; }
+.ly-arrow { color: var(--cinnabar); margin: 0 12px; font-size: 18px; }
+.ly-lines { display: flex; flex-direction: column; gap: 4px; }
+.ly-line {
+  display: flex; align-items: center; gap: 14px;
+  padding: 7px 12px; border-radius: 8px; font-size: 15px;
+}
+.ly-line.dong { background: #fdf3ec; border: 1px solid #ecc9b8; }
+.ly-shen { width: 40px; font-size: 13px; color: var(--gold); }
+.ly-qin { width: 44px; color: var(--ink); }
+.ly-na { width: 44px; font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; color: var(--ink); font-weight: 600; }
+.ly-mark { width: 48px; display: flex; gap: 5px; }
+.ly-mark b {
+  font-size: 12px; font-weight: 400; border-radius: 50%; width: 20px; height: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ly-mark .shi { background: var(--cinnabar); color: #fff; }
+.ly-mark .ying { border: 1px solid var(--cinnabar); color: var(--cinnabar); }
+.ly-mark .dim { opacity: .55; }
+.ly-bian-part { display: flex; align-items: center; gap: 12px; margin-left: 16px; color: var(--ink-light); font-size: 14px; }
+.ly-qin.dim, .ly-na.dim { color: var(--ink-light); }
+
+/* 爻画 */
+.ly-yao { display: inline-flex; gap: 8px; align-items: center; position: relative; width: 90px; }
+.ly-yao i { display: block; height: 11px; background: var(--ink); border-radius: 2px; }
+.ly-yao i:only-child { width: 90px; }
+.ly-yao i:not(:only-child) { width: 41px; }
+.ly-yao.big i { height: 13px; }
+.ly-yao.big i:only-child { width: 90px; }
+.ly-yao.big i:not(:only-child) { width: 41px; }
+.ly-dong-dot { position: absolute; right: -26px; color: var(--cinnabar); font-style: normal; font-size: 15px; }
+.ly-bian-part .ly-yao { width: 66px; }
+.ly-bian-part .ly-yao i:only-child { width: 66px; }
+.ly-bian-part .ly-yao i:not(:only-child) { width: 30px; }
+
+.ly-summary { font-size: 14.5px; line-height: 2.1; color: var(--ink); }
+.ly-summary b { color: var(--cinnabar); }
+.ly-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 420px; color: var(--ink-light); }
+.ly-empty div { font-size: 64px; color: var(--line); margin-bottom: 12px; }
