@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { paiZiwei, ZiweiResult, PALACE_NAMES } from '../lib/ziwei';
 import { PROVINCES, DEFAULT_CITY } from '../lib/cities';
+import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 // 传统命盘支位布局：宫支 -> [gridRow, gridCol]（4x4，中心 2x2 为信息区）
@@ -47,7 +48,7 @@ export default function ZiweiPage({ now }: { now: Date }) {
       <div className="card">
         <div className="section-title">紫微斗数 · 排盘</div>
         <div className="mh-form">
-          <label>出生时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
+          <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="出生时间" />
           <label>出生地
             <select value={prov} onChange={(e) => { setProv(e.target.value); const p = PROVINCES.find((x) => x.name === e.target.value)!; setCity(p.cities[0].name); }} className="jkj-select">
               {PROVINCES.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}

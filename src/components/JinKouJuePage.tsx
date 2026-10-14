@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { paiJinKouJue, JinKouJueResult } from '../lib/jinkoujue';
+import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
 const DIZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 const DIFEN_DIR: Record<string, string> = {
@@ -38,7 +39,7 @@ export default function JinKouJuePage({ now }: { now: Date }) {
       <div className="card">
         <div className="section-title">金口诀 · 起课</div>
         <div className="mh-form">
-          <label>时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
+          <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="时间" />
           <label>地分
             <select value={difen} onChange={(e) => setDifen(e.target.value)} className="jkj-select">
               {DIZHI.map((z) => (

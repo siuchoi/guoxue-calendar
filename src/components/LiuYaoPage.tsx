@@ -4,6 +4,7 @@ import {
   paiLiuYao, linesFromNumbers, linesFromTime, coinToValue,
   GUA_SYM, YONG_SHEN_HINT, LiuYaoResult,
 } from '../lib/liuyao';
+import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
 type Mode = 'coin' | 'time' | 'num';
 
@@ -143,13 +144,13 @@ export default function LiuYaoPage({ now }: { now: Date }) {
           </div>
         )}
 
-        {mode === 'time' && (
-          <div className="mh-form">
-            <label>起卦时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
-            <button className="ly-cast-btn" onClick={castByTime}>起卦排盘</button>
-            <div className="mh-hint">以农历年月日时起卦（梅花数法）</div>
-          </div>
-        )}
+{mode === 'time' && (
+            <div className="mh-form">
+              <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="起卦时间" />
+              <button className="ly-cast-btn" onClick={castByTime}>起卦排盘</button>
+              <div className="mh-hint">以农历年月日时起卦（梅花数法）</div>
+            </div>
+          )}
 
         {mode === 'num' && (
           <div className="mh-form">

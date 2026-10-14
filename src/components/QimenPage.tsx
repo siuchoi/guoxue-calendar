@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { paiQimen, QimenResult } from '../lib/qimen';
+import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const GONG_NAME: Record<number, string> = { 1: '坎一', 2: '坤二', 3: '震三', 4: '巽四', 5: '中五', 6: '乾六', 7: '兑七', 8: '艮八', 9: '离九' };
@@ -22,7 +23,7 @@ export default function QimenPage({ now }: { now: Date }) {
       <div className="card">
         <div className="section-title">时家奇门 · 起局</div>
         <div className="mh-form">
-          <label>时间 <input type="datetime-local" value={dt} onChange={(e) => setDt(e.target.value)} /></label>
+          <DateTimePicker value={parseDT(dt, now)} onChange={(d) => setDt(formatDT(d))} label="时间" />
           <button className="ly-cast-btn" onClick={cast}>排盘</button>
           <span className="mh-hint">拆补法 · 转盘法</span>
         </div>

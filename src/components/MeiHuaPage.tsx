@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Lunar } from 'lunar-typescript';
 import { qiGuaByNumbers, qiGuaByTime, MeiHuaResult, BAGUA } from '../lib/meihua';
+import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
 type Mode = 'time' | 'number';
 
@@ -82,7 +83,7 @@ export default function MeiHuaPage({ now }: { now: Date }) {
               <input type="checkbox" checked={useNow} onChange={(e) => setUseNow(e.target.checked)} /> 用当下时间
             </label>
             {!useNow && (
-              <input type="datetime-local" value={customTime} onChange={(e) => setCustomTime(e.target.value)} />
+              <DateTimePicker value={parseDT(customTime, now)} onChange={(d) => setCustomTime(formatDT(d))} />
             )}
             <span className="mh-hint">
               {useNow

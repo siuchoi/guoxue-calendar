@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { paiBazi, BaziResult, GAN_WX, ZHI_WX } from '../lib/bazi';
 import { hehun, HehunResult } from '../lib/hehun';
 import { PROVINCES, DEFAULT_CITY } from '../lib/cities';
+import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const EL_CLASS: Record<string, string> = { 木: 'el-mu', 火: 'el-huo', 土: 'el-tu', 金: 'el-jin', 水: 'el-shui' };
@@ -23,7 +24,7 @@ function PersonForm({ label, v, onChange }: { label: string; v: PersonInput; onC
     <div className="bz-form">
       <div className="bz-form-title">{label}</div>
       <div className="mh-form">
-        <input type="datetime-local" value={v.dt} onChange={(e) => onChange({ ...v, dt: e.target.value })} />
+        <DateTimePicker value={parseDT(v.dt)} onChange={(d) => onChange({ ...v, dt: formatDT(d) })} label={label} />
         <select value={v.sex} onChange={(e) => onChange({ ...v, sex: Number(e.target.value) })} className="jkj-select">
           <option value={1}>乾造（男）</option>
           <option value={0}>坤造（女）</option>
