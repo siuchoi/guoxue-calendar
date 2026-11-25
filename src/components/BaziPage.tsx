@@ -8,7 +8,7 @@ import DateTimePicker, { formatDT, parseDT } from './DateTimePicker';
 import GuideCard from './GuideCard';
 import InterpCard from './InterpCard';
 
-const pad = (n: number) => String(n).padStart(2, '0');
+const DEFAULT_BIRTH_DT = '2000-01-01T00:00'; // 2000-01-01 早子时
 const EL_CLASS: Record<string, string> = { 木: 'el-mu', 火: 'el-huo', 土: 'el-tu', 金: 'el-jin', 水: 'el-shui' };
 const PILLAR_KEYS = ['Year', 'Month', 'Day', 'Hour'] as const;
 const PILLAR_LABELS: Record<string, string> = { Year: '年柱', Month: '月柱', Day: '日柱', Hour: '时柱' };
@@ -124,11 +124,10 @@ function DaYunBar({ bz }: { bz: BaziResult }) {
   );
 }
 
-export default function BaziPage({ now }: { now: Date }) {
+export default function BaziPage() {
   const [mode, setMode] = useState<'single' | 'hehun'>('single');
-  const defDt = `${now.getFullYear() - 30}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T12:00`;
-  const [p1, setP1] = useState<PersonInput>({ dt: defDt, sex: 1, prov: '广东省', city: '深圳市', district: '南山区' });
-  const [p2, setP2] = useState<PersonInput>({ dt: defDt, sex: 0, prov: '广东省', city: '深圳市', district: '南山区' });
+  const [p1, setP1] = useState<PersonInput>({ dt: DEFAULT_BIRTH_DT, sex: 1, prov: '广东省', city: '深圳市', district: '南山区' });
+  const [p2, setP2] = useState<PersonInput>({ dt: DEFAULT_BIRTH_DT, sex: 0, prov: '广东省', city: '深圳市', district: '南山区' });
   const [bz, setBz] = useState<BaziResult | null>(null);
   const [hh, setHh] = useState<HehunResult | null>(null);
 
