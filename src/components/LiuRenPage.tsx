@@ -7,6 +7,13 @@ import GuideCard from './GuideCard';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/** 数字输入：解析失败保留旧值，越界钳到合法区间 */
+const clampInt = (raw: string, min: number, max: number, fallback: number) => {
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+};
+
 function gzIndexOf(gz: string): number {
   const g = GAN.indexOf(gz[0] as any);
   const z = ZHI.indexOf(gz[1] as any);
@@ -34,27 +41,34 @@ export default function LiuRenPage({ now }: Props) {
   const result = useMemo(() => {
     const [y, m, d] = dateStr.split('-').map(Number);
     if (!y || !m || !d) return null;
-    const solar = Solar.fromYmdHms(y, m, d, hour, minute, 0);
-    const lunar = solar.getLunar();
-    const dayGZ = lunar.getDayInGanZhiExact();
-    const timeGZ = lunar.getTimeInGanZhi();
+    if (!Number.isInteger(hour) || hour < 0 || hour > 23) return null;
+    if (!Number.isInteger(minute) || minute < 0 || minute > 59) return null;
+    try {
+      const solar = Solar.fromYmdHms(y, m, d, hour, minute, 0);
+      const lunar = solar.getLunar();
+      const dayGZ = lunar.getDayInGanZhiExact();
+      const timeGZ = lunar.getTimeInGanZhi();
 
-    // 节气时间表（含上年冬至）
-    const jqTable = lunar.getJieQiTable();
-    const jqTimes = Object.entries(jqTable).map(([name, s]) => {
-      const so = s as Solar;
-      return { name, time: new Date(so.getYear(), so.getMonth() - 1, so.getDay(), so.getHour(), so.getMinute(), so.getSecond()) };
-    });
-    const at = new Date(y, m - 1, d, hour, minute);
-    const yueJiang = getYueJiang(jqTimes, at);
-    const zhanShiZhi = ZHI.indexOf(timeGZ[1] as any);
+      // 节气时间表（含上年冬至）
+      const jqTable = lunar.getJieQiTable();
+      const jqTimes = Object.entries(jqTable).map(([name, s]) => {
+        const so = s as Solar;
+        return { name, time: new Date(so.getYear(), so.getMonth() - 1, so.getDay(), so.getHour(), so.getMinute(), so.getSecond()) };
+      });
+      const at = new Date(y, m - 1, d, hour, minute);
+      const yueJiang = getYueJiang(jqTimes, at);
+      const zhanShiZhi = ZHI.indexOf(timeGZ[1] as any);
 
-    const r = paiLiuRen({
-      dayGanZhiIndex: gzIndexOf(dayGZ),
-      zhanShiZhi,
-      yueJiang,
-    });
-    return { r, dayGZ, timeGZ, lunar, at };
+      const r = paiLiuRen({
+        dayGanZhiIndex: gzIndexOf(dayGZ),
+        zhanShiZhi,
+        yueJiang,
+      });
+      return { r, dayGZ, timeGZ, lunar, at };
+    } catch {
+      // 日期/时间越界等异常不让整页白屏，交给下方提示
+      return null;
+    }
   }, [dateStr, hour, minute]);
 
   if (!result) return <div className="card">请输入有效日期</div>;
@@ -67,8 +81,8 @@ export default function LiuRenPage({ now }: Props) {
         <GuideCard id="liuren" />
         <div className="lr-form">
           <label>占日 <input type="date" value={dateStr} onChange={(e) => setDateStr(e.target.value)} /></label>
-          <label>占时 <input type="number" min={0} max={23} value={hour} onChange={(e) => setHour(Number(e.target.value))} style={{ width: 70 }} /> 时</label>
-          <label><input type="number" min={0} max={59} value={minute} onChange={(e) => setMinute(Number(e.target.value))} style={{ width: 70 }} /> 分</label>
+          <label>占时 <input type="number" min={0} max={23} value={hour} onChange={(e) => setHour(clampInt(e.target.value, 0, 23, hour))} style={{ width: 70 }} /> 时</label>
+          <label><input type="number" min={0} max={59} value={minute} onChange={(e) => setMinute(clampInt(e.target.value, 0, 59, minute))} style={{ width: 70 }} /> 分</label>
           <button onClick={() => { const n = new Date(); setDateStr(`${n.getFullYear()}-${pad(n.getMonth() + 1)}-${pad(n.getDate())}`); setHour(n.getHours()); setMinute(n.getMinutes()); }}>用当下</button>
         </div>
         <div style={{ fontSize: 14, lineHeight: 2 }}>

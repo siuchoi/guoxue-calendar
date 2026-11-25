@@ -730,3 +730,13 @@ body {
 .hh-sec-score.pos { color: #3a7d44; }
 .hh-sec-score.neg { color: var(--cinnabar); }
 .hh-notes { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink); line-height: 2; }
+
+/* ── 页面错误兜底 ── */
+.error-card { padding: 28px 30px; }
+.error-msg { color: var(--ink); line-height: 1.9; margin-bottom: 16px; word-break: break-word; }
+.error-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.error-actions button {
+  background: var(--cinnabar); color: #fff; border: none; border-radius: 6px;
+  padding: 8px 20px; cursor: pointer; font-family: inherit; font-size: 14px; letter-spacing: 2px;
+}
+.error-actions button:hover { background: var(--cinnabar-deep); }

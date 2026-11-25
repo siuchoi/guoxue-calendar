@@ -87,8 +87,6 @@ export default function CalendarPage({ now, city }: Props) {
   // ── 选中日详情 ──
   const selSolar = Solar.fromYmd(selY, selM, selD);
   const selLunar = selSolar.getLunar();
-  const ec = selLunar.getEightChar();
-  ec.setSect(2);
 
   const selInfo = cellInfo(selY, selM, selD);
   const trueTime = trueSolarTime(now, city.lng);
@@ -122,6 +120,17 @@ export default function CalendarPage({ now, city }: Props) {
   const [selSC, setSelSC] = useState<number | null>(null);
   const activeSC = selSC ?? (isSelToday ? bjSC : 0);
   const activeTime = dayTimes[activeSC];
+
+  // 四柱按「所选时辰」排：代表时刻 = 早子 00:00、丑 02:00 … 亥 22:00。
+  // 原实现用 Solar.fromYmd(不含时刻) 起盘，时柱会永久停在子时。
+  // 今天 23 点且未手动选时辰时，按晚子处理（setSect(2) 换日）。
+  const isLateZi = activeSC === 0 && isSelToday && selSC === null && now.getHours() === 23;
+  const PILLAR_HOURS = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
+  const pillarHour = isLateZi ? 23 : (PILLAR_HOURS[activeSC] ?? 0);
+  const pillarSolar = Solar.fromYmdHms(selY, selM, selD, pillarHour, 0, 0);
+  const pillarLunar = pillarSolar.getLunar();
+  const pillarEc = pillarLunar.getEightChar();
+  pillarEc.setSect(2);
 
   // ── 每日一句（按日期轮转）──
   const quote = DAILY_QUOTES[(selY * 372 + selM * 31 + selD) % DAILY_QUOTES.length];
@@ -223,8 +232,15 @@ export default function CalendarPage({ now, city }: Props) {
               {selLunar.getZhiXing()}日 · {selLunar.getXiu()}{selLunar.getZheng()}{selLunar.getAnimal()} · 纳音{selLunar.getDayNaYin()}
             </div>
             <div className="sub" style={{ marginTop: 4 }}>
-              北京时间 {pad(now.getHours())}:{pad(now.getMinutes())}:{pad(now.getSeconds())}（{SHI_CHEN_INFO[bjSC].name}）
-              ｜ 真太阳时 {pad(trueTime.getHours())}:{pad(trueTime.getMinutes())}:{pad(trueTime.getSeconds())}（{SHI_CHEN_INFO[trueSC].name}）
+              {isSelToday && selSC === null ? (
+                <>
+                  北京时间 {pad(now.getHours())}:{pad(now.getMinutes())}:{pad(now.getSeconds())}（{SHI_CHEN_INFO[bjSC].name}）
+                  ｜ 真太阳时 {pad(trueTime.getHours())}:{pad(trueTime.getMinutes())}:{pad(trueTime.getSeconds())}（{SHI_CHEN_INFO[trueSC].name}）
+                  {isLateZi && ' ｜ 晚子换日'}
+                </>
+              ) : (
+                <>所选 {activeTime?.getZhi() ?? '子'}时（{SC_RANGE[activeSC]}）· 时柱 {activeTime?.getGanZhi() ?? '—'}</>
+              )}
             </div>
           </div>
 
@@ -238,10 +254,10 @@ export default function CalendarPage({ now, city }: Props) {
           <div className="section-title">干支四柱</div>
           <div className="sizhu">
             {(['Year', 'Month', 'Day', 'Time'] as const).map((k, i) => {
-              const gan = (ec as any)[`get${k}Gan`]();
-              const zhi = (ec as any)[`get${k}Zhi`]();
-              const ssG = k === 'Day' ? '元' : (ec as any)[`get${k}ShiShenGan`]();
-              const ssZ = (ec as any)[`get${k}ShiShenZhi`]()[0];
+              const gan = (pillarEc as any)[`get${k}Gan`]();
+              const zhi = (pillarEc as any)[`get${k}Zhi`]();
+              const ssG = k === 'Day' ? '元' : (pillarEc as any)[`get${k}ShiShenGan`]();
+              const ssZ = (pillarEc as any)[`get${k}ShiShenZhi`]()[0];
               return (
                 <div className="pillar" key={k}>
                   <div className="label">{['年柱', '月柱', '日柱', '时柱'][i]}</div>

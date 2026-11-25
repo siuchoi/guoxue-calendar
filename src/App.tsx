@@ -11,6 +11,7 @@ import JinKouJuePage from './components/JinKouJuePage';
 import QimenPage from './components/QimenPage';
 import ZiweiPage from './components/ZiweiPage';
 import BaziPage from './components/BaziPage';
+import ErrorBoundary from './components/ErrorBoundary';
 
 type TabKey = 'calendar' | 'clock' | 'liuren' | 'meihua' | 'liuyao' | 'jinkoujue' | 'qimen' | 'ziwei' | 'bazi';
 
@@ -97,15 +98,17 @@ export default function App() {
         <button className={tab === 'bazi' ? 'active' : ''} onClick={() => setTab('bazi')}>八字合婚</button>
       </nav>
 
-      {tab === 'calendar' && <CalendarPage now={now} city={city} />}
-      {tab === 'clock' && <ClockPage now={now} city={city} trueTime={trueTime} />}
-      {tab === 'liuren' && <LiuRenPage now={now} />}
-      {tab === 'meihua' && <MeiHuaPage now={now} />}
-      {tab === 'liuyao' && <LiuYaoPage now={now} />}
-      {tab === 'jinkoujue' && <JinKouJuePage now={now} />}
-      {tab === 'qimen' && <QimenPage now={now} />}
-      {tab === 'ziwei' && <ZiweiPage now={now} />}
-      {tab === 'bazi' && <BaziPage now={now} />}
+      <ErrorBoundary key={tab}>
+        {tab === 'calendar' && <CalendarPage now={now} city={city} />}
+        {tab === 'clock' && <ClockPage now={now} city={city} trueTime={trueTime} />}
+        {tab === 'liuren' && <LiuRenPage now={now} />}
+        {tab === 'meihua' && <MeiHuaPage now={now} />}
+        {tab === 'liuyao' && <LiuYaoPage now={now} />}
+        {tab === 'jinkoujue' && <JinKouJuePage now={now} />}
+        {tab === 'qimen' && <QimenPage now={now} />}
+        {tab === 'ziwei' && <ZiweiPage now={now} />}
+        {tab === 'bazi' && <BaziPage now={now} />}
+      </ErrorBoundary>
 
       <footer className="footer-note">
         观玄 · 历法数据由 lunar-typescript 推算 · 天气由 Open-Meteo 提供 · 真太阳时含经度与均时差修正
