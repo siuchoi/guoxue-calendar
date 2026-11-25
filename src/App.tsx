@@ -107,7 +107,7 @@ export default function App() {
         {tab === 'jinkoujue' && <JinKouJuePage now={now} />}
         {tab === 'qimen' && <QimenPage now={now} />}
         {tab === 'ziwei' && <ZiweiPage now={now} />}
-        {tab === 'bazi' && <BaziPage now={now} />}
+        {tab === 'bazi' && <BaziPage />}
       </ErrorBoundary>
 
       <footer className="footer-note">
